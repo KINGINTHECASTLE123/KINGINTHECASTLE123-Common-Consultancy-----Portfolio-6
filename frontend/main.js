@@ -1,67 +1,70 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Dashboard loaded!");
 
-    // Initialize Chart.js placeholders
-    const ctx1 = document.getElementById('chart1').getContext('2d');
-    const ctx2 = document.getElementById('chart2').getContext('2d');
-
-    // Placeholder data for charts
-    const placeholderData = {
-        labels: ['January', 'February', 'March', 'April', 'May'],
-        datasets: [{
-            label: 'Sample Data',
-            data: [10, 20, 30, 40, 50],
-            backgroundColor: ['rgba(255, 99, 132, 0.2)'],
-            borderColor: ['rgba(255, 99, 132, 1)'],
-            borderWidth: 1
-        }]
-    };
-
-    // Initialize Chart.js charts
-    new Chart(ctx1, {
-        type: 'bar',
-        data: placeholderData,
-        options: {
-            responsive: true,
-        }
-    });
-
-    new Chart(ctx2, {
-        type: 'line',
-        data: placeholderData,
-        options: {
-            responsive: true,
-        }
-    });
-
     // Initialize Leaflet.js map
-    const map = L.map('map').setView([54.5260, 15.2551], 4); // Centered in Europe
+    const map = L.map('map').setView([50.0, 10.0], 5); // Centered in Europe
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Fetch and display country data on the map
-    fetch('http://localhost:3000/api/classification/ukraine')
+    // Fetch country data from the backend
+    fetch('http://localhost:3000/api/mapdata')
         .then(response => response.json())
-        .then(data => {
-            data.forEach(country => {
-                let color;
-                switch (country.position) {
-                    case 'for':
-                        color = 'green';
-                        break;
-                    case 'neutral':
-                        color = 'yellow';
-                        break;
-                    case 'imod':
-                        color = 'red';
-                        break;
-                    default:
-                        color = 'gray';
-                }
-            });
+        .then(countryData => {
+            // Fetch GeoJSON data
+            fetch('https://raw.githubusercontent.com/leakyMirror/map-of-europe/master/GeoJSON/europe.geojson')
+                .then(response => response.json())
+                .then(geojson => {
+                    // Filter GeoJSON features to include only countries in the dataset
+                    const filteredFeatures = geojson.features.filter(feature =>
+                        countryData.some(data => data.country === feature.properties.NAME)
+                    );
+
+                    // Create a new GeoJSON object with filtered features
+                    const filteredGeoJSON = {
+                        type: "FeatureCollection",
+                        features: filteredFeatures,
+                    };
+
+                    // Add GeoJSON layer to the map
+                    L.geoJSON(filteredGeoJSON, {
+                        style: feature => ({
+                            fillColor: getColor(feature.properties.NAME, countryData),
+                            weight: 1,
+                            opacity: 1,
+                            color: '',
+                            dashArray: '', // No dashed border
+                            fillOpacity: 0.7,
+                        }),
+                        onEachFeature: (feature, layer) => {
+                            const countryStats = countryData.find(data => data.country === feature.properties.NAME);
+                            if (countryStats) {
+                                const popupContent = `
+                                    <b>${countryStats.country}</b><br>
+                                    For: ${countryStats.total_for}<br>
+                                    Against: ${countryStats.total_imod}<br>
+                                    Total Posts: ${countryStats.total_posts}
+                                `;
+                                layer.bindPopup(popupContent);
+                            }
+                        }
+                    }).addTo(map);
+                })
+                .catch(error => console.error("Error fetching GeoJSON data:", error));
         })
-        .catch(error => console.error('Error fetching country data:', error));
+        .catch(error => console.error("Error fetching country data:", error));
+
+    // Define color function based on "for" vs. "against" votes
+    function getColor(countryName, countryData) {
+        const data = countryData.find(item => item.country === countryName);
+        if (!data) return '#D3D3D3'; // Default for missing countries
+
+        const forPercentage = data.total_for / data.total_posts;
+        if (forPercentage > 0.75) return '#08306b'; // Dark blue for high "for" percentage
+        if (forPercentage > 0.5) return '#2171b5';
+        if (forPercentage > 0.25) return '#6baed6';
+        return '#c6dbef'; // Light blue for low "for" percentage
+    }
 });
