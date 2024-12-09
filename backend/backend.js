@@ -25,13 +25,18 @@ connection.connect((err) => {
     }
 });
 
-app.get("/api/classification", (req, res) => {
-    connection.query("SELECT * FROM classification", (err, results) => {
+app.get("/api/classification/ukraine", (req, res) => {
+    const query = `
+        SELECT gpt_ukraine_for_imod AS position, COUNT(*) AS count
+        FROM classification
+        GROUP BY gpt_ukraine_for_imod
+    `;
+    connection.query(query, (err, results) => {
         if (err) {
-            console.error("Query Error:", err); // Log detaljeret fejl
-            res.status(500).json({ error: "Database query failed", details: err.message });
+            console.error("Query Error:", err);
+            res.status(500).send({ error: "Database query failed" });
         } else {
-            res.json(results);
+            res.send(results);
         }
     });
 });
