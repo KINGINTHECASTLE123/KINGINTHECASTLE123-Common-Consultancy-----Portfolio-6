@@ -25,6 +25,17 @@ connection.connect((err) => {
     }
 });
 
+app.get("/api/classification", (req, res) => {
+    connection.query("SELECT * FROM classification", (err, results) => {
+        if (err) {
+            console.error("Query Error:", err); // Log detaljeret fejl
+            res.status(500).json({ error: "Database query failed", details: err.message });
+        } else {
+            res.json(results);
+        }
+    });
+});
+
 app.listen(port, () => {
     console.log(`Application is now running on port ${port}`);
 });
