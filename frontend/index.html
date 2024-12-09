@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Common Consultancy Dashboard</title>
     <link rel="stylesheet" href="style.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 <header>
@@ -14,6 +17,7 @@
             <li><a href="#section1">Overview</a></li>
             <li><a href="#section2">Interactive Chart 1</a></li>
             <li><a href="#section3">Interactive Chart 2</a></li>
+            <li><a href="#map-section">Interactive Map</a></li>
         </ul>
     </nav>
 </header>
@@ -33,11 +37,24 @@
         <h2>Interactive Chart 2</h2>
         <canvas id="chart2" width="400" height="200"></canvas>
     </section>
+
+    <section id="map-section">
+        <h2>Interactive Map</h2>
+        <div id="map" style="height: 500px; margin-top: 20px;"></div>
+    </section>
 </main>
 
 <footer>
+    <p>&copy; 2024 Common Consultancy. All rights reserved.</p>
 </footer>
 
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.min.js"></script>
+
+<!-- Leaflet.js Script -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Main JavaScript -->
 <script src="main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.min.js"></script>
 
