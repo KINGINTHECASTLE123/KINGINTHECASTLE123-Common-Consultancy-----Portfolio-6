@@ -56,6 +56,43 @@ app.get("/api/mapdata", (req, res) => {
     });
 });
 
+// API route to fetch timeseries data
+app.get("/api/timeseries", (req, res) => {
+    const query = `
+        SELECT 
+            t.year,
+            t.month,
+            AVG(
+                CASE 
+                    WHEN c.gpt_ukraine_for_imod = 'for' THEN 1
+                    WHEN c.gpt_ukraine_for_imod = 'imod' THEN -1
+                    ELSE 0
+                END
+            ) AS avg_sentiment
+        FROM classification c
+        JOIN time t ON c.ccpost_id = t.ccpost_id
+        JOIN metrics m ON c.ccpost_id = m.ccpost_id
+        GROUP BY t.year, t.month
+        ORDER BY t.year, t.month;
+    `;
+
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error("Query Error:", err);
+            return res.status(500).send({ error: "Database query failed" });
+        }
+
+        // Here we only return the data fields used by the frontend
+        const formattedResults = results.map(row => ({
+            year: row.year,
+            month: row.month,
+            avg_sentiment: row.avg_sentiment
+        }));
+
+        res.json(formattedResults);
+    });
+});
+
 // Start server
 app.listen(port, () => {
     console.log(`Application is now running on port ${port}`);
