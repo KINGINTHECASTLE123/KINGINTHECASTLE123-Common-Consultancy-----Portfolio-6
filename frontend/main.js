@@ -1,78 +1,59 @@
+// Interactive Map (Visualizations nr.3)
+let categoryChart;
+
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("Dashboard loaded!");
+
     try {
         const map = await initMap();
         console.log("Map initialized successfully.");
+    } catch (error) {
+        console.error("Error initializing the map:", error);
+    }
 
+    try {
         await initSupportChart();
         console.log("Support chart initialized successfully.");
     } catch (error) {
-        console.error("Error initializing dashboard components:", error);
+        console.error("Error initializing support chart:", error);
     }
 });
 
-
-// Interactive Map (Visualizations nr.3)
-// Main JavaScript file
 async function initMap() {
     const map = L.map("map").setView([50.0, 10.0], 4);
-
-    // Add tile layer to the map
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 
-    try {
-        // Fetch country data and GeoJSON simultaneously
-        const [countryData, geojson] = await Promise.all([
-            fetchWithErrorHandling("http://localhost:3000/api/mapdata"),
-            fetchWithErrorHandling("https://raw.githubusercontent.com/leakyMirror/map-of-europe/master/GeoJSON/europe.geojson"),
-        ]);
+    const [countryData, geojson] = await Promise.all([
+        fetch("http://localhost:3000/api/mapdata").then((res) => res.json()),
+        fetch("https://raw.githubusercontent.com/leakyMirror/map-of-europe/master/GeoJSON/europe.geojson").then((res) => res.json()),
+    ]);
 
-        // Filter GeoJSON features based on available country data
-        const filteredGeoJSON = {
-            type: "FeatureCollection",
-            features: geojson.features.filter((feature) =>
-                countryData.some((data) => data.country === feature.properties.NAME)
-            ),
-        };
+    const filteredFeatures = geojson.features.filter((feature) =>
+        countryData.some((data) => data.country === feature.properties.NAME)
+    );
+    const filteredGeoJSON = { type: "FeatureCollection", features: filteredFeatures };
 
-        // Add filtered GeoJSON data to the map
-        L.geoJSON(filteredGeoJSON, {
-            style: (feature) => ({
-                fillColor: getColor(feature.properties.NAME, countryData),
-                weight: 1,
-                opacity: 1,
-                color: "",
-                fillOpacity: 0.7,
-            }),
-            onEachFeature: (feature, layer) => {
-                const countryStats = countryData.find((d) => d.country === feature.properties.NAME);
-                if (countryStats) {
-                    layer.bindPopup(createPopupContent(countryStats));
-                }
-            },
-        }).addTo(map);
+    L.geoJSON(filteredGeoJSON, {
+        style: (f) => ({
+            fillColor: getColor(f.properties.NAME, countryData),
+            weight: 1,
+            opacity: 1,
+            color: "",
+            fillOpacity: 0.7,
+        }),
+        onEachFeature: (feature, layer) => {
+            const countryStats = countryData.find((d) => d.country === feature.properties.NAME);
+            if (countryStats) {
+                layer.bindPopup(createPopupContent(countryStats));
+            }
+        },
+    }).addTo(map);
 
-        // Add specific country markers to the map
-        addCountryMarkers(map, countryData);
-
-        // Add legend to the map
-        addLegend(map);
-    } catch (error) {
-        console.error("Error initializing map:", error);
-    }
+    addCountryMarkers(map, countryData);
 
     return map;
-}
-
-// Utility function to handle fetch and errors
-async function fetchWithErrorHandling(url) {
-    const response = await fetch(url);
-    if (!response.ok) {
-        throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
-    }
-    return response.json();
 }
 
 // Determine map color based on support percentage
@@ -82,11 +63,12 @@ function getColor(countryName, countryData) {
 
     const forPercentage = data.total_for / data.total_posts;
 
-    if (forPercentage >= 0.75) return "#67000d"; // Strong red for high support
-    if (forPercentage >= 0.5) return "#a50f15"; // Medium red
-    if (forPercentage >= 0.25) return "#ef3b2c"; // Light red
-    return "#fcbba1"; // Very light red for low support
+    if (forPercentage > 0.75) return "#c7e9c0"; // Light green
+    if (forPercentage > 0.5) return "#74c476"; // Medium green
+    if (forPercentage > 0.25) return "#fcbba1"; // Light red
+    return "#cb181d"; // Strong red
 }
+
 
 // Create popup content for map
 function createPopupContent(stats) {
@@ -107,10 +89,10 @@ function addCountryMarkers(map, countryData) {
         { name: "Malta", coords: [35.9375, 14.3754] },
     ];
 
-    countryMarkers.forEach((marker) => {
-        const stats = countryData.find((d) => d.country === marker.name);
+    countryMarkers.forEach((c) => {
+        const stats = countryData.find((d) => d.country === c.name);
         if (stats) {
-            L.circleMarker(marker.coords, {
+            L.circleMarker(c.coords, {
                 radius: 5,
                 fillColor: "#ff5959",
                 color: "#f00",
@@ -118,107 +100,130 @@ function addCountryMarkers(map, countryData) {
             })
                 .addTo(map)
                 .bindPopup(createPopupContent(stats));
-        } else {
-            console.warn(`No data found for ${marker.name}`);
         }
     });
 }
 
-// Add legend to the map
-function addLegend(map) {
-    const legend = L.control({ position: "bottomright" });
+// Interactive Chart nr. 2
+async function initSupportChart() {
+    const timeseriesData = await fetch("http://localhost:3000/api/timeseries").then((res) => res.json());
 
-    legend.onAdd = function () {
-        const div = L.DomUtil.create("div", "info legend");
-        const grades = [0.25, 0.5, 0.75, 1];
-        const colors = ["#fcbba1", "#ef3b2c", "#a50f15", "#67000d"];
+    const labels = timeseriesData.map((d) => d.year); // Brug kun år som labels
+    const supportData = timeseriesData.map((d) => d.avg_sentiment);
 
-        // Add a title to the legend
-        div.innerHTML = `<h4>Support Percentage</h4>`;
+    const ctx = document.getElementById("chart2").getContext("2d");
 
-        // Loop through grades and colors to generate labels
-        for (let i = 0; i < grades.length; i++) {
-            div.innerHTML += `
-                <i style="background:${colors[i]}"></i>
-                ${grades[i] * 100}% ${grades[i + 1] ? "&ndash; " + grades[i + 1] * 100 + "%" : "+"}<br>
-            `;
-        }
-
-        return div;
-    };
-
-    legend.addTo(map);
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: "Average support for Ukraine per year",
+                    data: supportData,
+                    borderColor: "#1f77b4",
+                    backgroundColor: "transparent",
+                    pointRadius: 0,
+                    borderWidth: 2,
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                mode: "index",
+                intersect: false,
+            },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: "Support level",
+                    },
+                    min: 0, // Sørg for at y-aksen starter fra 0
+                    suggestedMax: Math.max(...supportData) + 0.1, // Tilføj lidt luft over den største værdi
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: "Year",
+                    },
+                },
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: "How does the support for Ukraine change over time?",
+                },
+                legend: {
+                    display: false,
+                },
+            },
+        },
+    });
 }
 
 
-// Interactive Chart nr. 2
-async function initSupportChart() {
-    try {
-        const timeseriesData = await fetch("http://localhost:3000/api/timeseries")
-            .then((res) => res.json());
+//Category Interactions nr. 1
+async function updateCategoryChart(category) {
+    let mappedCategory;
+    switch (category.toLowerCase()) {
+        case 'political':
+            mappedCategory = 'Political';
+            break;
+        case 'media':
+            mappedCategory = 'Media';
+            break;
+        case 'social':
+            mappedCategory = 'Societal';
+            break;
+        default:
+            mappedCategory = 'Political';
+    }
 
-        // Kombiner år og kvartal til labels som "2021 Q1"
-        const labels = timeseriesData.map((d) => `${d.year} ${d.quarter}`);
-        const supportData = timeseriesData.map((d) => d.avg_sentiment);
+    const response = await fetch(`http://localhost:3000/api/categoryInteractions?category=${mappedCategory}`);
+    const data = await response.json();
 
-        const ctx = document.getElementById("chart2").getContext("2d");
+    const labels = ["Likes", "Comments", "Shares"];
+    const dataset = [
+        data[0]?.total_likes || 0,
+        data[0]?.total_comments || 0,
+        data[0]?.total_shares || 0,
+    ];
 
-        new Chart(ctx, {
-            type: "line",
+    if (categoryChart) {
+        categoryChart.data.datasets[0].data = dataset;
+        categoryChart.data.datasets[0].label = `Interactions for ${mappedCategory}`;
+        categoryChart.update();
+    } else {
+        const ctx = document.getElementById("categoryChart").getContext("2d");
+        categoryChart = new Chart(ctx, {
+            type: "bar",
             data: {
                 labels: labels,
                 datasets: [
                     {
-                        label: "Average support for Ukraine (by quarter)",
-                        data: supportData,
-                        borderColor: "#1f77b4",
-                        backgroundColor: "transparent",
-                        pointRadius: 4,
-                        borderWidth: 2,
+                        label: `Interactions for ${mappedCategory}`,
+                        data: dataset,
+                        backgroundColor: ["#1f77b4", "#ff7f0e", "#2ca02c"],
                     },
                 ],
             },
             options: {
                 responsive: true,
-                interaction: {
-                    mode: "index",
-                    intersect: false,
-                },
                 scales: {
                     y: {
+                        beginAtZero: true,
                         title: {
                             display: true,
-                            text: "Support level",
+                            text: "Total Interactions",
                         },
-                        min: -0.5,
-                        max: 0.5,
-                    },
-                    x: {
-                        type: "category",
-                        title: {
-                            display: true,
-                            text: "Year and Quarter",
-                        },
-                        ticks: {
-                            autoSkip: false,
-                        },
-                    },
-                },
-                plugins: {
-                    title: {
-                        display: true,
-                        text: [
-                            "How does the support for Ukraine change over time?",
-                            "Support is calculated as +1 for 'for Ukraine' and -1 for 'against Ukraine'."
-                        ],
-                    },
-                    legend: {
-                        display: false,
                     },
                 },
             },
         });
-    } catch (error) {
-        console.error("Failed to fetch or render data:", error);
     }
 }
+
+// Initial kald, så der er noget at se ved load
+updateCategoryChart('political');
