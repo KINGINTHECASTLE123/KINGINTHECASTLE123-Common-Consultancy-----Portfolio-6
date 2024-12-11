@@ -1,6 +1,3 @@
-// Interactive Map (Visualizations nr.3)
-let categoryChart;
-
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("Dashboard loaded!");
 
@@ -106,9 +103,15 @@ function addCountryMarkers(map, countryData) {
 
 // Interactive Chart nr. 2
 async function initSupportChart() {
-    const timeseriesData = await fetch("http://localhost:3000/api/timeseries").then((res) => res.json());
+    const timeseriesData = await fetch("http://localhost:3000/api/timeseries")
+        .then((res) => res.json())
+        .catch((err) => {
+            console.error("Failed to fetch time series data:", err);
+            return [];
+        });
 
-    const labels = timeseriesData.map((d) => d.year); // Brug kun år som labels
+    // Kombiner år og kvartaler til labels (fx "2021 Q1")
+    const labels = timeseriesData.map((d) => `${d.year} ${d.quarter}`);
     const supportData = timeseriesData.map((d) => d.avg_sentiment);
 
     const ctx = document.getElementById("chart2").getContext("2d");
@@ -119,11 +122,11 @@ async function initSupportChart() {
             labels: labels,
             datasets: [
                 {
-                    label: "Average support for Ukraine per year",
+                    label: "Average support for Ukraine (by quarter)",
                     data: supportData,
                     borderColor: "#1f77b4",
                     backgroundColor: "transparent",
-                    pointRadius: 0,
+                    pointRadius: 4,
                     borderWidth: 2,
                 },
             ],
@@ -140,20 +143,27 @@ async function initSupportChart() {
                         display: true,
                         text: "Support level",
                     },
-                    min: 0, // Sørg for at y-aksen starter fra 0
-                    suggestedMax: Math.max(...supportData) + 0.1, // Tilføj lidt luft over den største værdi
+                    min: -0.5, // Tillader negativ støtte
+                    suggestedMax: Math.max(...supportData) + 0.1, // Luft over højeste værdi
                 },
                 x: {
+                    type: "category",
                     title: {
                         display: true,
-                        text: "Year",
+                        text: "Year and Quarter",
+                    },
+                    ticks: {
+                        autoSkip: false, // Viser alle kvartaler
                     },
                 },
             },
             plugins: {
                 title: {
                     display: true,
-                    text: "How does the support for Ukraine change over time?",
+                    text: [
+                        "How does the support for Ukraine change over time?",
+                        "Support is calculated as +1 for 'support to ukraine' and -1 for 'against support to ukraine"
+                    ],
                 },
                 legend: {
                     display: false,
@@ -162,68 +172,3 @@ async function initSupportChart() {
         },
     });
 }
-
-
-//Category Interactions nr. 1
-async function updateCategoryChart(category) {
-    let mappedCategory;
-    switch (category.toLowerCase()) {
-        case 'political':
-            mappedCategory = 'Political';
-            break;
-        case 'media':
-            mappedCategory = 'Media';
-            break;
-        case 'social':
-            mappedCategory = 'Societal';
-            break;
-        default:
-            mappedCategory = 'Political';
-    }
-
-    const response = await fetch(`http://localhost:3000/api/categoryInteractions?category=${mappedCategory}`);
-    const data = await response.json();
-
-    const labels = ["Likes", "Comments", "Shares"];
-    const dataset = [
-        data[0]?.total_likes || 0,
-        data[0]?.total_comments || 0,
-        data[0]?.total_shares || 0,
-    ];
-
-    if (categoryChart) {
-        categoryChart.data.datasets[0].data = dataset;
-        categoryChart.data.datasets[0].label = `Interactions for ${mappedCategory}`;
-        categoryChart.update();
-    } else {
-        const ctx = document.getElementById("categoryChart").getContext("2d");
-        categoryChart = new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: `Interactions for ${mappedCategory}`,
-                        data: dataset,
-                        backgroundColor: ["#1f77b4", "#ff7f0e", "#2ca02c"],
-                    },
-                ],
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: "Total Interactions",
-                        },
-                    },
-                },
-            },
-        });
-    }
-}
-
-// Initial kald, så der er noget at se ved load
-updateCategoryChart('political');

@@ -51,20 +51,22 @@ app.get("/api/mapdata", (req, res) => {
 // Interactive Chart nr. 2
 app.get("/api/timeseries", (req, res) => {
     const query = `
-        SELECT 
-            t.year,
-            AVG(
-                CASE 
-                    WHEN c.gpt_ukraine_for_imod = 'for' THEN 1
-                    WHEN c.gpt_ukraine_for_imod = 'imod' THEN -1
-                    ELSE 0
-                END
+        SELECT t.year, CONCAT('Q', CEIL(t.month / 3)) AS quarter,
+        AVG(
+           CASE
+               WHEN c.gpt_ukraine_for_imod = 'for' THEN 1
+               WHEN c.gpt_ukraine_for_imod = 'imod' THEN -1
+               ELSE 0
+               END
             ) AS avg_sentiment
         FROM classification c
         JOIN time t ON c.ccpost_id = t.ccpost_id
         JOIN metrics m ON c.ccpost_id = m.ccpost_id
-        GROUP BY t.year
-        ORDER BY t.year;
+        JOIN sourcepop s ON m.ccpageid = s.ccpageid
+        WHERE s.country = 'Denmark'
+          AND t.year IN (2021, 2022, 2023, 2024)
+        GROUP BY t.year, quarter
+        ORDER BY t.year, quarter;
     `;
 
     connection.query(query, (err, results) => {
@@ -76,33 +78,11 @@ app.get("/api/timeseries", (req, res) => {
         // Formatér resultaterne for at sikre konsistens
         const formattedResults = results.map(row => ({
             year: row.year,
+            quarter: row.quarter,
             avg_sentiment: row.avg_sentiment
         }));
 
         res.json(formattedResults);
-    });
-});
-
-//Category Interactions nr. 1
-app.get("/api/categoryInteractions", (req, res) => {
-    const category = req.query.category || 'Political'; // Default til Political
-    const query = `
-        SELECT
-            s.category AS category,
-            COALESCE(SUM(m.likes), 0) AS total_likes,
-            COALESCE(SUM(m.comments), 0) AS total_comments,
-            COALESCE(SUM(m.shares), 0) AS total_shares
-        FROM sourcepop s
-        LEFT JOIN metrics m ON m.ccpageid = s.ccpageid
-        WHERE s.category = ?
-        GROUP BY s.category;
-    `;
-    connection.query(query, [category], (err, results) => {
-        if (err) {
-            console.error("Query Error:", err);
-            return res.status(500).send({ error: "Database query failed" });
-        }
-        res.json(results);
     });
 });
 
