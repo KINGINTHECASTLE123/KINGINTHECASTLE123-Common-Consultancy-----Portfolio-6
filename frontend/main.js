@@ -172,25 +172,26 @@ async function totalInteractionsData() {
     return { yearQuarter, totalInteractions }
 }
 
-async function renderChart1 () {
+async function renderTotalInteractionsChart () {
     const chartData = await totalInteractionsData();
-    const getChartPlacement = document.getElementById('chart1');
-    new Chart (getChartPlacement, {
+    const getChartElement = document.getElementById('chart1');
+    new Chart (getChartElement, {
         type: "line",
         data: {
-            labels: chartData.total_interactions,
+            labels: chartData.yearQuarter,
             datasets: [{
                 label: 'none',
-                data: chartData.year_quarter,
-                backgroundColor: '#9BD0F5',
-                borderWidth: 1
+                data: chartData.totalInteractions,
+                borderColor: "#1f77b4",
+                backgroundColor: "transparent",
+                borderWidth: 1,
             }]
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
-                    position: 'right',
+                    display: false,
                 },
                 title: {
                     display: true,
@@ -199,7 +200,8 @@ async function renderChart1 () {
             }
         }
     })
+    console.log('Total interactions chart finished rendering!')
 }
-renderChart1();
+renderTotalInteractionsChart();
 //
 

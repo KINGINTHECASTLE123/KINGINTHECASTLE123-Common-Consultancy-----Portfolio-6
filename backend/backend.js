@@ -119,7 +119,13 @@ app.get('/api/total_interactions_over_year', (req, res) => {
             console.error("Query error:", error);
             return res.status(500).send(`${error}: Query failed`)
         }
-        res.json(results)
+        // Iterate through results and push results into each separate array
+        const response = { year_quarter: [], total_interactions: [] }
+        results.forEach(row => {
+            response.year_quarter.push(row.year_quarter)
+            response.total_interactions.push(row.total_interactions)
+        });
+        res.json(response)
     });
 });
 

@@ -13,7 +13,7 @@
     <nav>
         <ul>
             <li><a href="#section1">Overview</a></li>
-            <li><a href="#section2">Category Interactions</a></li>
+            <li><a href="#section2">Total Interactions Over Time</a></li>
             <li><a href="#section3">Interactive Chart 2</a></li>
             <li><a href="#map-section">Interactive Map</a></li>
         </ul>
@@ -27,13 +27,8 @@
     </section>
 
     <section id="section2">
-        <h2>Category Interactions</h2>
-        <div id="category-filters">
-            <button onclick="updateCategoryChart('political')">Political</button>
-            <button onclick="updateCategoryChart('media')">Media</button>
-            <button onclick="updateCategoryChart('social')">Social</button>
-        </div>
-        <canvas id="categoryChart" width="800" height="400"></canvas>
+        <h2>Interactions Over Time</h2>
+        <canvas id="chart1" width="800" height="400"></canvas>
     </section>
 
     <section id="section3">
