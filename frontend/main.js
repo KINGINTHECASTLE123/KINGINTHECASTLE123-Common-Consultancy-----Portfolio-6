@@ -165,25 +165,24 @@ async function initSupportChart() {
 
 // Category Interactions nr. 1
 async function totalInteractionsData() {
-    const response = await fetch('http://localhost:3000/api/total_interactions_over_years');
+    const response = await fetch('http://localhost:3000/api/total_interactions_over_year');
     const data = await response.json();
     const yearQuarter = data.year_quarter;
     const totalInteractions = data.total_interactions;
     return { yearQuarter, totalInteractions }
 }
 
-async function renderTotalInteractionsChart () {
+async function renderChart1 () {
     const chartData = await totalInteractionsData();
     const getChartPlacement = document.getElementById('chart1');
     new Chart (getChartPlacement, {
         type: "line",
         data: {
-            labels: chartData.yearQuarter,
+            labels: chartData.total_interactions,
             datasets: [{
                 label: 'none',
-                data: chartData.totalInteractions,
-                borderColor: "#1f77b4",
-                backgroundColor: "transparent",
+                data: chartData.year_quarter,
+                backgroundColor: '#9BD0F5',
                 borderWidth: 1
             }]
         },
@@ -191,7 +190,7 @@ async function renderTotalInteractionsChart () {
             responsive: true,
             plugins: {
                 legend: {
-                    display: false,
+                    position: 'right',
                 },
                 title: {
                     display: true,
@@ -200,8 +199,7 @@ async function renderTotalInteractionsChart () {
             }
         }
     })
-    console.log('Loaded Total Interactions Chart!')
 }
-renderTotalInteractionsChart();
+renderChart1();
 //
 

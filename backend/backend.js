@@ -106,7 +106,7 @@ app.get("/api/categoryInteractions", (req, res) => {
     });
 });
 
-app.get('/api/total_interactions_over_years', (req, res) => {
+app.get('/api/total_interactions_over_year', (req, res) => {
     const query = `
     SELECT yearquarter AS year_quarter, SUM(total_interactions) AS total_interactions
     FROM \`time\`
@@ -119,13 +119,7 @@ app.get('/api/total_interactions_over_years', (req, res) => {
             console.error("Query error:", error);
             return res.status(500).send(`${error}: Query failed`)
         }
-        // Iterate through results and push results into each separate array
-        const response = { year_quarter: [], total_interactions: [] }
-        results.forEach(row => {
-            response.year_quarter.push(row.year_quarter)
-            response.total_interactions.push(row.total_interactions)
-        });
-        res.json(response)
+        res.json(results)
     });
 });
 
