@@ -99,10 +99,27 @@ app.get("/api/categoryInteractions", (req, res) => {
     `;
     connection.query(query, [category], (err, results) => {
         if (err) {
-            console.error("Query Error:", err);
+            console.error("Query error:", err);
             return res.status(500).send({ error: "Database query failed" });
         }
         res.json(results);
+    });
+});
+
+app.get('/api/total_interactions_over_year', (req, res) => {
+    const query = `
+    SELECT yearquarter AS year_quarter, SUM(total_interactions) AS total_interactions
+    FROM \`time\`
+    INNER JOIN metrics ON metrics.ccpost_id = \`time\`.ccpost_id
+    WHERE yearquarter >= "2022Q1"
+    GROUP BY yearquarter
+    ORDER BY yearquarter ASC;`;
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error("Query error:", error);
+            return res.status(500).send(`${error}: Query failed`)
+        }
+        res.json(results)
     });
 });
 

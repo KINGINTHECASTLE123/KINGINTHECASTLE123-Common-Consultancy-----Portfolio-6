@@ -107,7 +107,6 @@ function addCountryMarkers(map, countryData) {
 // Interactive Chart nr. 2
 async function initSupportChart() {
     const timeseriesData = await fetch("http://localhost:3000/api/timeseries").then((res) => res.json());
-
     const labels = timeseriesData.map((d) => d.year); // Brug kun år som labels
     const supportData = timeseriesData.map((d) => d.avg_sentiment);
 
@@ -164,66 +163,42 @@ async function initSupportChart() {
 }
 
 
-//Category Interactions nr. 1
-async function updateCategoryChart(category) {
-    let mappedCategory;
-    switch (category.toLowerCase()) {
-        case 'political':
-            mappedCategory = 'Political';
-            break;
-        case 'media':
-            mappedCategory = 'Media';
-            break;
-        case 'social':
-            mappedCategory = 'Societal';
-            break;
-        default:
-            mappedCategory = 'Political';
-    }
-
-    const response = await fetch(`http://localhost:3000/api/categoryInteractions?category=${mappedCategory}`);
+// Category Interactions nr. 1
+async function totalInteractionsData() {
+    const response = await fetch('http://localhost:3000/api/total_interactions_over_year');
     const data = await response.json();
-
-    const labels = ["Likes", "Comments", "Shares"];
-    const dataset = [
-        data[0]?.total_likes || 0,
-        data[0]?.total_comments || 0,
-        data[0]?.total_shares || 0,
-    ];
-
-    if (categoryChart) {
-        categoryChart.data.datasets[0].data = dataset;
-        categoryChart.data.datasets[0].label = `Interactions for ${mappedCategory}`;
-        categoryChart.update();
-    } else {
-        const ctx = document.getElementById("categoryChart").getContext("2d");
-        categoryChart = new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: `Interactions for ${mappedCategory}`,
-                        data: dataset,
-                        backgroundColor: ["#1f77b4", "#ff7f0e", "#2ca02c"],
-                    },
-                ],
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: "Total Interactions",
-                        },
-                    },
-                },
-            },
-        });
-    }
+    const yearQuarter = data.year_quarter;
+    const totalInteractions = data.total_interactions;
+    return { yearQuarter, totalInteractions }
 }
 
-// Initial kald, så der er noget at se ved load
-updateCategoryChart('political');
+async function renderChart1 () {
+    const chartData = await totalInteractionsData();
+    const getChartPlacement = document.getElementById('chart1');
+    new Chart (getChartPlacement, {
+        type: "line",
+        data: {
+            labels: chartData.total_interactions,
+            datasets: [{
+                label: 'none',
+                data: chartData.year_quarter,
+                backgroundColor: '#9BD0F5',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                },
+                title: {
+                    display: true,
+                    text: 'Total Interactions Over The Course Of War-time'
+                }
+            }
+        }
+    })
+}
+renderChart1();
+
