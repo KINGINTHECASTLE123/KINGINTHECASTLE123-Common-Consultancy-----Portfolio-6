@@ -50,6 +50,7 @@ async function renderTotalInteractionsChart () {
     })
     console.log('Total interactions chart finished rendering!')
 }
+renderTotalInteractionsChart();
 
 // Interactive Chart nr. 2
 async function initSupportChart() {
@@ -207,5 +208,4 @@ function addCountryMarkers(map, countryData) {
                 .bindPopup(createPopupContent(stats));
         }
     });
-    renderTotalInteractionsChart();
 }
