@@ -37,15 +37,17 @@ app.get('/api/total_interactions_over_year', (req, res) => {
     connection.query(query, (error, results) => {
         if (error) {
             console.error("Query error:", error);
-            return res.status(500).send(`${error}: Query failed`)
+            return res.status(500).send(`${error}: Query failed`);
         }
         // Iterate through results and push results into each separate array
         const response = { year_quarter: [], total_interactions: [] }
         results.forEach(row => {
-            response.year_quarter.push(row.year_quarter)
-            response.total_interactions.push(row.total_interactions)
+            // Tilføj mellemrum mellem år og kvartal
+            const formattedYearQuarter = row.year_quarter.slice(0, 4) + ' ' + row.year_quarter.slice(4);
+            response.year_quarter.push(formattedYearQuarter);
+            response.total_interactions.push(row.total_interactions);
         });
-        res.json(response)
+        res.json(response);
     });
 });
 
@@ -65,10 +67,9 @@ app.get("/api/timeseries", (req, res) => {
         JOIN metrics m ON c.ccpost_id = m.ccpost_id
         JOIN sourcepop s ON m.ccpageid = s.ccpageid
         WHERE s.country = 'Denmark'
-          AND t.year IN (2021, 2022, 2023, 2024)
+          AND t.year IN (2022, 2023, 2024)
         GROUP BY t.year, quarter
-        ORDER BY t.year, quarter;
-    `;
+        ORDER BY t.year, quarter;`;
 
     connection.query(query, (err, results) => {
         if (err) {

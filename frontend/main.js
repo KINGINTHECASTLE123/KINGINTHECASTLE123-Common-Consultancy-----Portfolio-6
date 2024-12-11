@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// Category Interactions nr. 1
+// Interactive chart nr. 1
 async function totalInteractionsData() {
     const response = await fetch('http://localhost:3000/api/total_interactions_over_year');
     const data = await response.json();
@@ -52,7 +52,7 @@ async function renderTotalInteractionsChart () {
 }
 renderTotalInteractionsChart();
 
-// Interactive Chart nr. 2
+// Interactive chart nr. 2
 async function initSupportChart() {
     try {
         const timeseriesData = await fetch("http://localhost:3000/api/timeseries")
@@ -247,11 +247,8 @@ function addLegend(map) {
                 <span>Low</span><span>High</span>
             </div>
         `;
-
         div.innerHTML = `<h4>Support Intensity</h4>${gradientBar}`;
-
         return div;
     };
-
     legend.addTo(map);
 }
