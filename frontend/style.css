@@ -138,3 +138,8 @@ footer a:hover {
     transform: scale(1.05); /* Slight zoom effect on hover */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
 }
+
+.flag {
+    font-size: 2em;
+    margin-left: 15px;
+}
