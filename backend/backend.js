@@ -41,6 +41,25 @@ app.get("/api/classification/ukraine", (req, res) => {
     });
 });
 
+// Endpoint til at se støtte til Ukraine over årene
+app.get("/api/time/classification/ukraine", (req, res) => {
+    const query = `
+        SELECT year AS \`År\`, gpt_ukraine_for_imod AS \`For eller Imod\`
+        FROM time
+        INNER JOIN classification 
+        ON time.ccpost_id = classification.ccpost_id
+        WHERE gpt_ukraine_for_imod = "for" OR "imod"
+    `;
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error("Query Error:", err);
+            res.status(500).send({ error: "Database query failed" });
+        } else {
+            res.send(results);
+        }
+    });
+});
+
 app.listen(port, () => {
     console.log(`Application is now running on port ${port}`);
 });

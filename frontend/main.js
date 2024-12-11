@@ -17,10 +17,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }]
     };
 
+    // Function til at hente data fra backend (støtte til ukraine i løbet af årene)
+    async function supportOverYears() {
+        try {
+            const url = '/api/time/classification/ukraine'
+            // fetch request
+            const response = await fetch(url);
+            // await until request complete
+            const datapoints = await response.json();
+            console.log(datapoints);
+            return datapoints;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
     // Initialize Chart.js charts
     new Chart(ctx1, {
-        type: 'bar',
-        data: placeholderData,
+        type: 'line',
+        data: supportOverYears(),
         options: {
             responsive: true,
         }
