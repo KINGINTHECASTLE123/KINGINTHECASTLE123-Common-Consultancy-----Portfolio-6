@@ -25,7 +25,7 @@ connection.connect(err => {
     }
 });
 
-// API route to fetch map data
+// Interactive Map (Visualizations nr.3)
 app.get("/api/mapdata", (req, res) => {
     const query = `
         SELECT 
@@ -48,7 +48,7 @@ app.get("/api/mapdata", (req, res) => {
     });
 });
 
-// API route to fetch timeseries data
+// Interactive Chart nr. 2
 app.get("/api/timeseries", (req, res) => {
     const query = `
         SELECT 
@@ -83,7 +83,7 @@ app.get("/api/timeseries", (req, res) => {
     });
 });
 
-// API route for category interactions
+//Category Interactions nr. 1
 app.get("/api/categoryInteractions", (req, res) => {
     const category = req.query.category || 'Political'; // Default til Political
     const query = `
