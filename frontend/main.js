@@ -59,7 +59,7 @@ async function initSupportChart() {
             .then((res) => res.json());
 
         // Kombiner år og kvartal til labels som "2021 Q1"
-        const labels = timeseriesData.map((d) => `${d.year} ${d.quarter}`);
+        const labels = timeseriesData.map((d) => `${d.year} Q${d.quarter}`);
         const supportData = timeseriesData.map((d) => d.avg_sentiment);
 
         const ctx = document.getElementById("chart2").getContext("2d");
@@ -75,6 +75,7 @@ async function initSupportChart() {
                         borderColor: "#1f77b4",
                         backgroundColor: "transparent",
                         pointRadius: 4,
+                        pointStyle: "circle", // Gør punkterne cirkulære
                         borderWidth: 2,
                     },
                 ],

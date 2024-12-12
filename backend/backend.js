@@ -54,22 +54,22 @@ app.get('/api/total_interactions_over_year', (req, res) => {
 // Interactive Chart nr. 2
 app.get("/api/timeseries", (req, res) => {
     const query = `
-        SELECT t.year, CONCAT('Q', CEIL(t.month / 3)) AS quarter,
-            AVG(
-                CASE 
-                    WHEN c.gpt_ukraine_for_imod = 'for' THEN 1
-                    WHEN c.gpt_ukraine_for_imod = 'imod' THEN -1
-                    ELSE 0
-                END
-            ) AS avg_sentiment
+        SELECT t.year, t.yearquarter,
+           AVG(
+               CASE
+                   WHEN c.gpt_ukraine_for_imod = 'for' THEN 1
+                   WHEN c.gpt_ukraine_for_imod = 'imod' THEN -1
+                   ELSE 0
+               END
+           ) AS avg_sentiment
         FROM classification c
         JOIN time t ON c.ccpost_id = t.ccpost_id
         JOIN metrics m ON c.ccpost_id = m.ccpost_id
         JOIN sourcepop s ON m.ccpageid = s.ccpageid
         WHERE s.country = 'Denmark'
-          AND t.year IN (2022, 2023, 2024)
-        GROUP BY t.year, quarter
-        ORDER BY t.year, quarter;`;
+          AND t.year IN (2021, 2022, 2023, 2024)
+        GROUP BY t.year, t.yearquarter
+        ORDER BY t.year, t.yearquarter;`;
 
     connection.query(query, (err, results) => {
         if (err) {
@@ -77,12 +77,15 @@ app.get("/api/timeseries", (req, res) => {
             return res.status(500).send({ error: "Database query failed" });
         }
 
-        // Format results to include year, quarter, and avg_sentiment
-        const formattedResults = results.map(row => ({
-            year: row.year,
-            quarter: row.quarter,
-            avg_sentiment: row.avg_sentiment
-        }));
+        // Split yearquarter into year and quarter
+        const formattedResults = results.map(row => {
+            const [year, quarter] = row.yearquarter.split('Q'); // Split "2022Q1" into ["2022", "1"]
+            return {
+                year: parseInt(year),
+                quarter: parseInt(quarter),
+                avg_sentiment: parseFloat(row.avg_sentiment)
+            };
+        });
 
         res.json(formattedResults);
     });
