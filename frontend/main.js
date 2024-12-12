@@ -52,6 +52,93 @@ async function renderTotalInteractionsChart () {
 }
 renderTotalInteractionsChart();
 
+// Fetch sentiment percentage of Ukraine data
+async function sentimentPercentageData() {
+    const response = await fetch('http://localhost:3000/api/sentiment/percentages');
+    const data = await response.json();
+    const country = data.country;
+    const positive_percentage = data.positive_percentage;
+    const negative_percentage = data.negative_percentage;
+    return { country, positive_percentage, negative_percentage }
+}
+
+async function renderSentimentPercentageChart() {
+    const chartData = await sentimentPercentageData();
+    const getChartElement = document.getElementById('sentiment_chart');
+    new Chart(getChartElement, {
+        type: "bar",
+        data: {
+            labels: chartData.country,
+            datasets: [{
+                label: 'none',
+                data: chartData.positive_percentage,
+                backgroundColor: '#4BAAC8',
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                title: {
+                    display: true,
+                    text: 'Percentage of Interactions In Favor of Supporting Ukraine',
+                    color: 'black',
+                    font: {
+                        size: 30,
+                        weight: 'bold',
+                    }
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Percentage',
+                        color: '#4BAAC8',
+                        font: {
+                            size: 30,
+                            weight: 'bold',
+                        },
+                    },
+                    ticks: {
+                        color: 'black',
+                        padding: 10,
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.4)',
+                        zIndex: -1, // Render gridlines behind bars
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Country',
+                        color: '#4BAAC8',
+                        font: {
+                            size: 30,
+                            weight: 'bold',
+                        },
+                    },
+                    ticks: {
+                        color: 'black',
+                    },
+                    grid: {
+                        display: false, // No vertical gridlines
+                    }
+                }
+            }
+        }
+    });
+    console.log('Sentiment chart rendered!');
+}
+renderSentimentPercentageChart();
+
+
 // Interactive chart nr. 2
 async function initSupportChart() {
     try {

@@ -114,6 +114,34 @@ app.get("/api/mapdata", (req, res) => {
     });
 });
 
+// Endpoint to reach sentiment percentages support of Ukraine
+app.get("/api/sentiment/percentages", (req, res) => {
+    const query = `
+        SELECT country,
+        \tROUND(SUM(gpt_ukraine_for_imod = 'for') * 100 / COUNT(*)) AS positive_percentage,
+        ROUND(SUM(gpt_ukraine_for_imod = 'imod') * 100 / COUNT(*)) AS negative_percentage
+        FROM sourcepop
+        INNER JOIN metrics ON metrics.ccpageid = sourcepop.ccpageid
+        INNER JOIN classification ON classification.ccpost_id = metrics.ccpost_id
+        WHERE gpt_ukraine_for_imod IN ('for', 'imod')
+        GROUP BY country
+        ORDER BY positive_percentage DESC;
+    `;
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error("Query Error:", err);
+            res.status(500).send({ error: "Database query failed" });
+        }
+        // Iterate through results and push results into each separate array
+        const response = { country: [], positive_percentage: [] }
+        results.forEach(row => {
+            response.country.push(row.country);
+            response.positive_percentage.push(row.positive_percentage);
+        });
+        res.json(response);
+    });
+});
+
 // Start server
 app.listen(port, () => {
     console.log(`Application is now running on port ${port}`);
