@@ -111,35 +111,47 @@ footer a:hover {
         flex-direction: column;
         gap: 0.5rem;
     }
+
     footer {
         font-size: 0.8rem;
         padding: 1rem 1.5rem;
     }
 }
 
+/* Image gallery styling */
 .image-gallery {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 4rem; /* Adds space between the items */
-    margin-top: 1rem; /* Adds some space above the gallery */
+    gap: 2rem; /* Reduced spacing for a tighter layout */
+    margin-top: 1rem;
 }
 
 .image-gallery img,
 .image-gallery iframe {
-    border-radius: 8px; /* Adds rounded corners to images and GIF */
+    border-radius: 8px;
     border: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .image-gallery img:hover,
 .image-gallery iframe:hover {
-    transform: scale(1.05); /* Slight zoom effect on hover */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Flag styling */
 .flag {
     font-size: 2em;
     margin-left: 15px;
+}
+
+/* Map headline styling */
+.map-headline {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 10px;
 }

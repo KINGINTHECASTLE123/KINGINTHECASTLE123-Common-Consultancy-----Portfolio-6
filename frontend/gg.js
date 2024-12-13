@@ -131,11 +131,11 @@ async function initSupportChart() {
                         display: true,
                         text: [
                             "How does the support for Ukraine change over time?",
-                            "Support is calculated as +1 for 'for Ukraine' and -1 for 'against Ukraine"
+                            "Support is calculated as +1 for 'for Ukraine' and -1 for 'against Ukraine'."
                         ],
                         color: 'black',
                         font: {
-                            size: 25,
+                            size: 30,
                             weight: 'bold',
                         },
                     },
@@ -185,146 +185,6 @@ async function initSupportChart() {
     }
 }
 
-// Interactive Map nr. 3
-async function initMap() {
-    const map = L.map("map").setView([50.0, 10.0], 4);
-
-    // Add tile layer
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors",
-    }).addTo(map);
-
-    try {
-        // Fetch data concurrently
-        const [countryData, geojson, walesGeoJSON] = await Promise.all([
-            fetchData("http://localhost:3000/api/mapdata"),
-            fetchData("https://raw.githubusercontent.com/leakyMirror/map-of-europe/master/GeoJSON/europe.geojson"),
-            fetchData("https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/wal/eer.json"),
-        ]);
-
-        // Add layers to the map
-        addGeoJSONLayer(map, filterGeoJSON(geojson, countryData), countryData);
-        addWalesGeoJSONLayer(map, walesGeoJSON, countryData);
-
-        // Add markers and legend
-        addCountryMarkers(map, countryData);
-        addLegend(map);
-    } catch (error) {
-        console.error("Error initializing map:", error);
-    }
-
-    return map;
-}
-
-// Fetch data with error handling
-async function fetchData(url) {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
-    return response.json();
-}
-
-// Filter GeoJSON features to match country data
-function filterGeoJSON(geojson, countryData) {
-    return {
-        type: "FeatureCollection",
-        features: geojson.features.filter(feature =>
-            countryData.some(data => data.country === feature.properties.NAME)
-        ),
-    };
-}
-
-// Add generic GeoJSON layer to the map
-function addGeoJSONLayer(map, geojson, countryData) {
-    L.geoJSON(geojson, {
-        style: feature => getGeoJSONStyle(feature.properties.NAME, countryData),
-        onEachFeature: (feature, layer) => bindPopup(layer, feature.properties.NAME, countryData),
-    }).addTo(map);
-}
-
-// Add Wales-specific GeoJSON layer
-function addWalesGeoJSONLayer(map, walesGeoJSON, countryData) {
-    L.geoJSON(walesGeoJSON, {
-        style: () => getGeoJSONStyle("Wales", countryData),
-        onEachFeature: (feature, layer) => bindPopup(layer, "Wales", countryData),
-    }).addTo(map);
-}
-
-// Get GeoJSON layer style
-function getGeoJSONStyle(countryName, countryData) {
-    const stats = countryData.find(data => data.country === countryName);
-    return {
-        fillColor: stats ? getColor(stats) : "#D3D3D3",
-        weight: 1,
-        opacity: 1,
-        color: "grey",
-        fillOpacity: 0.7,
-    };
-}
-
-// Bind popup to a layer
-function bindPopup(layer, countryName, countryData) {
-    const stats = countryData.find(data => data.country === countryName);
-    layer.bindPopup(stats ? createPopupContent(stats) : `<b>${countryName}</b><br>No data available`);
-}
-
-// Determine map color based on sentiment
-function getColor(stats) {
-    const forPercentage = stats.total_for / stats.total_posts;
-    if (forPercentage >= 0.75) return "#67000d";
-    if (forPercentage >= 0.5) return "#a50f15";
-    if (forPercentage >= 0.25) return "#ef3b2c";
-    return "#fcbba1";
-}
-
-// Create popup content
-function createPopupContent(stats) {
-    return `
-        <b>${stats.country}</b><br>
-        For: ${stats.total_for}<br>
-        Against: ${stats.total_imod}<br>
-        Total Posts: ${stats.total_posts}
-    `;
-}
-
-// Add country markers to the map
-function addCountryMarkers(map, countryData) {
-    const markers = [
-        { name: "Malta", coords: [35.9375, 14.3754] },
-    ];
-
-    markers.forEach(({ name, coords }) => {
-        const stats = countryData.find(data => data.country === name);
-        if (stats) {
-            L.circleMarker(coords, {
-                radius: 5,
-                fillColor: "#ff5959",
-                color: "#f00",
-                fillOpacity: 1,
-            })
-                .addTo(map)
-                .bindPopup(createPopupContent(stats));
-        }
-    });
-}
-
-// Add legend to the map
-function addLegend(map) {
-    const legend = L.control({ position: "bottomleft" });
-
-    legend.onAdd = () => {
-        const div = L.DomUtil.create("div", "info legend");
-        div.innerHTML = `
-            <h4>Support Intensity</h4>
-            <div style="background: linear-gradient(to right, #fcbba1, #ef3b2c, #a50f15, #67000d); height: 10px; width: 100%; margin-top: 5px;"></div>
-            <div style="display: flex; justify-content: space-between;">
-                <span>Low</span><span>High</span>
-            </div>
-        `;
-        return div;
-    };
-    legend.addTo(map);
-}
-
 // Sentiment bar chart nr. 4
 async function sentimentPercentageData() {
     const response = await fetch('http://localhost:3000/api/sentiment/percentages');
@@ -332,7 +192,7 @@ async function sentimentPercentageData() {
     const country = data.country;
     const positive_percentage = data.positive_percentage;
     const negative_percentage = data.negative_percentage;
-    return { country, positive_percentage, negative_percentage }
+    return { country, positive_percentage, negative_percentage };
 }
 
 async function renderSentimentPercentageChart() {

@@ -12,45 +12,47 @@
     <h1>Common Consultancy</h1>
     <nav>
         <ul>
-            <li><a href="#section2">Total Interactions Over Time</a></li>
-            <li><a href="#section3">Interactive Chart 2</a></li>
-            <li><a href="#map-section">Interactive Map</a></li>
-            <li><a href="#section4">Sentiment percentages</a></li>
+            <li><a href="#section2" aria-label="Navigate to Total Interactions Over Time section">Total Interactions Over Time</a></li>
+            <li><a href="#section3" aria-label="Navigate to Interactive Chart 2 section">Interactive Chart 2</a></li>
+            <li><a href="#map-section" aria-label="Navigate to Interactive Map section">Interactive Map</a></li>
+            <li><a href="#section4" aria-label="Navigate to Sentiment Percentages section">Sentiment Percentages</a></li>
         </ul>
     </nav>
 </header>
 
 <main>
     <section id="section1">
-        <h2>Overview  🇺🇦</h2>
+        <h2>Overview 🇺🇦</h2>
         <p>Welcome to the dashboard! Here you can interact with various data visualizations.</p>
         <div class="image-gallery">
-            <img src="https://static.demilked.com/wp-content/uploads/2022/03/russo-ukrainian-war-memes-12.jpeg" width="300" height="300" />
-            <img src="https://i.chzbgr.com/full/9667114240/h43CCDFE5/person-sleep-ukraine-and-woke-up-russia-imgflipcom" width="300" height="300"/>
-            <iframe src="https://giphy.com/embed/K9lOuHVgENt5dUWQnf" width="300" height="300"></iframe>
+            <figure>
+                <img src="https://static.demilked.com/wp-content/uploads/2022/03/russo-ukrainian-war-memes-12.jpeg" alt="Meme about Russo-Ukrainian war" width="300" height="300" />
+            </figure>
+            <figure>
+                <img src="https://i.chzbgr.com/full/9667114240/h43CCDFE5/person-sleep-ukraine-and-woke-up-russia-imgflipcom" alt="Person dreaming about Ukraine and waking up in Russia" width="300" height="300"/>
+            </figure>
+            <figure>
+                <iframe src="https://giphy.com/embed/K9lOuHVgENt5dUWQnf" title="Giphy animation about Ukraine" width="300" height="300"></iframe>
+            </figure>
         </div>
     </section>
 
     <section id="section2">
-        <h2>Interactions Over Time</h2>
         <canvas id="chart1" width="800" height="400"></canvas>
     </section>
 
     <section id="section3">
-        <h2>Interactive Chart 2</h2>
         <canvas id="chart2"></canvas>
     </section>
 
     <section id="map-section">
-        <h2>Interactive Map</h2>
+        <h2 class="map-headline">Support for Ukraine Across Europe</h2>
         <div id="map" style="height: 500px; margin-top: 20px;"></div>
     </section>
 
     <section id="section4">
-        <h2>Sentiment Chart</h2>
         <canvas id="sentiment_chart"></canvas>
     </section>
-
 </main>
 
 <footer>
@@ -60,6 +62,5 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.min.js"></script>
 <script src="main.js"></script>
-
 </body>
 </html>
