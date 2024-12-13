@@ -52,13 +52,13 @@ app.get('/api/total_interactions_over_year', (req, res) => {
 });
 
 // Interactive Chart nr. 2
-app.get("/api/timeseries", (req, res) => {
+app.get("/api/support_over_yearquarters", (req, res) => {
     const query = `
         SELECT t.year, t.yearquarter,
            AVG(
                CASE
-                   WHEN c.gpt_ukraine_for_imod = 'for' THEN 1
-                   WHEN c.gpt_ukraine_for_imod = 'imod' THEN -1
+                   WHEN c.gpt_ukraine_for_imod = 'for' THEN 100
+                   WHEN c.gpt_ukraine_for_imod = 'imod' THEN -100
                    ELSE 0
                END
            ) AS avg_sentiment
@@ -67,7 +67,7 @@ app.get("/api/timeseries", (req, res) => {
         JOIN metrics m ON c.ccpost_id = m.ccpost_id
         JOIN sourcepop s ON m.ccpageid = s.ccpageid
         WHERE s.country = 'Denmark'
-          AND t.year IN (2021, 2022, 2023, 2024)
+          AND t.year IN (2022, 2023, 2024)
         GROUP BY t.year, t.yearquarter
         ORDER BY t.year, t.yearquarter;`;
 

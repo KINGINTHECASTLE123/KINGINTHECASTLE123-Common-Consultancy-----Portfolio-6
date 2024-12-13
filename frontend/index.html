@@ -12,10 +12,10 @@
     <h1>Russo-Ukrainian war sentiment analysis</h1>
     <nav>
         <ul>
-            <li><a href="#section2">Total Interactions Over Time</a></li>
-            <li><a href="#section3">Interactive Chart 2</a></li>
-            <li><a href="#map-section">Interactive Map</a></li>
             <li><a href="#section4">Sentiment percentages</a></li>
+            <li><a href="#section3">Support over quarters</a></li>
+            <li><a href="#section2">Total Interactions Over Time</a></li>
+            <li><a href="#map-section">Interactive Map</a></li>
         </ul>
     </nav>
 </header>
@@ -23,7 +23,7 @@
 <main>
     <section id="section1">
         <h2>Overview</h2>
-        <p>The Russo-Ukrainian war has seen a devastating impact on lives, economies and geopolitics, causing a ripple effect throughout the entire world. In retrospect, present and foreseeable future, the discourse of this war will continue to be on the daily order of our lives. In relation to this topic, we have attempted to design a webpage that analyzes public opinion of the ongoing war in Ukraine through visualisations.</p>
+        <p>The Russo-Ukrainian war has seen a meaningful impact on lives, economies and geopolitics, causing a ripple effect throughout the entire world. In retrospect, present and foreseeable future, discussions about this war will remain a central part of daily life. In relation to this topic, we have attempted to design a webpage that analyzes public opinion of the ongoing war in Ukraine through visualisations.</p>
         <div class="image-gallery">
             <img src="https://static.demilked.com/wp-content/uploads/2022/03/russo-ukrainian-war-memes-12.jpeg" width="300" height="300" />
             <img src="https://i.chzbgr.com/full/9667114240/h43CCDFE5/person-sleep-ukraine-and-woke-up-russia-imgflipcom" width="300" height="300"/>
@@ -33,24 +33,24 @@
         </div>
     </section>
 
+    <section id="section4">
+        <h2>Sentiment Chart</h2>
+        <canvas id="sentiment_chart"></canvas>
+    </section>
+
+    <section id="section3">
+        <h2>Support over quarters</h2>
+        <canvas id="chart2"></canvas>
+    </section>
+
     <section id="section2">
         <h2>Interactions Over Time</h2>
         <canvas id="chart1" width="800" height="400"></canvas>
     </section>
 
-    <section id="section3">
-        <h2>Interactive Chart 2</h2>
-        <canvas id="chart2"></canvas>
-    </section>
-
     <section id="map-section">
         <h2>Interactive Map</h2>
         <div id="map" style="height: 500px; margin-top: 20px;"></div>
-    </section>
-
-    <section id="section4">
-        <h2>Sentiment Chart</h2>
-        <canvas id="sentiment_chart"></canvas>
     </section>
 
 </main>

@@ -55,12 +55,12 @@ renderTotalInteractionsChart();
 // Interactive chart nr. 2
 async function initSupportChart() {
     try {
-        const timeseriesData = await fetch("http://localhost:3000/api/timeseries")
+        const supportOverYearquartersData = await fetch("http://localhost:3000/api/support_over_yearquarters")
             .then((res) => res.json());
 
         // Kombiner år og kvartal til labels som "2021 Q1"
-        const labels = timeseriesData.map((d) => `${d.year} Q${d.quarter}`);
-        const supportData = timeseriesData.map((d) => d.avg_sentiment);
+        const labels = supportOverYearquartersData.map((d) => `${d.year} Q${d.quarter}`);
+        const supportData = supportOverYearquartersData.map((d) => d.avg_sentiment);
 
         const ctx = document.getElementById("chart2").getContext("2d");
 
@@ -72,11 +72,11 @@ async function initSupportChart() {
                     {
                         label: "Average support for Ukraine (by quarter)",
                         data: supportData,
-                        borderColor: "#1f77b4",
+                        borderColor: "#09A4F6",
                         backgroundColor: "transparent",
                         pointRadius: 4,
                         pointStyle: "circle", // Gør punkterne cirkulære
-                        borderWidth: 2,
+                        borderWidth: 4,
                     },
                 ],
             },
@@ -90,19 +90,39 @@ async function initSupportChart() {
                     y: {
                         title: {
                             display: true,
-                            text: "Support level",
+                            text: "Support Level",
+                            color: "#09A4F6",
+                            font: {
+                                size: 30,
+                                weight: 'bold'
+                            }
                         },
-                        min: -0.5,
-                        max: 0.5,
+                        min: -40,
+                        max: 100,
+                        ticks: {
+                            color: "#09A4F6",
+                            font: {
+                                size: 20,
+                            }
+                        }
                     },
                     x: {
                         type: "category",
                         title: {
                             display: true,
                             text: "Year and Quarter",
+                            color: "#F65B09",
+                            font: {
+                                size: 20,
+                                weight: 'bold',
+                            }
                         },
                         ticks: {
                             autoSkip: false,
+                            color: '#F65B09',
+                            font: {
+                                size: 15,
+                            }
                         },
                     },
                 },
@@ -110,9 +130,14 @@ async function initSupportChart() {
                     title: {
                         display: true,
                         text: [
-                            "How does the support for Ukraine change over time?",
-                            "Support is calculated as +1 for 'for Ukraine' and -1 for 'against Ukraine'."
+                            "How does support for Ukraine change over time?",
+                            "Values above 0 indicate support, values below 0 indicate against."
                         ],
+                        color: 'black',
+                        font: {
+                            size: 25,
+                            weight: 'bold',
+                        }
                     },
                     legend: {
                         display: false,
