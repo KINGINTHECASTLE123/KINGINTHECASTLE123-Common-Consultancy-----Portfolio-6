@@ -17,22 +17,22 @@ async function totalInteractionsData() {
     const data = await response.json();
     const yearQuarter = data.year_quarter;
     const totalInteractions = data.total_interactions;
-    return { yearQuarter, totalInteractions }
+    return { yearQuarter, totalInteractions };
 }
 
-async function renderTotalInteractionsChart () {
+async function renderTotalInteractionsChart() {
     const chartData = await totalInteractionsData();
     const getChartElement = document.getElementById('chart1');
-    new Chart (getChartElement, {
+    new Chart(getChartElement, {
         type: "line",
         data: {
             labels: chartData.yearQuarter,
             datasets: [{
                 label: 'none',
                 data: chartData.totalInteractions,
-                borderColor: "#1f77b4",
-                backgroundColor: "transparent",
-                borderWidth: 1,
+                borderColor: "#4BAAC8",
+                backgroundColor: "rgba(75, 170, 200, 0.3)",
+                borderWidth: 2,
             }]
         },
         options: {
@@ -43,12 +43,55 @@ async function renderTotalInteractionsChart () {
                 },
                 title: {
                     display: true,
-                    text: 'Total Interactions Over The Course Of War-time'
-                }
-            }
-        }
-    })
-    console.log('Total interactions chart finished rendering!')
+                    text: 'Total Interactions Over The Course Of War-time',
+                    color: 'black',
+                    font: {
+                        size: 30,
+                        weight: 'bold',
+                    },
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Interactions',
+                        color: '#4BAAC8',
+                        font: {
+                            size: 30,
+                            weight: 'bold',
+                        },
+                    },
+                    ticks: {
+                        color: 'black',
+                        padding: 10,
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.4)',
+                    },
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Year and Quarter',
+                        color: '#4BAAC8',
+                        font: {
+                            size: 30,
+                            weight: 'bold',
+                        },
+                    },
+                    ticks: {
+                        color: 'black',
+                    },
+                    grid: {
+                        display: false,
+                    },
+                },
+            },
+        },
+    });
+    console.log('Total interactions chart finished rendering!');
 }
 renderTotalInteractionsChart();
 

@@ -11,51 +11,67 @@ body {
     background-color: #f4f4f9;
 }
 
-/* Header styling */
+/* Header Styling */
 header {
     background: linear-gradient(90deg, #1f77b4, #333);
     color: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    top: 0;
-    z-index: 1000;
+    padding: 4vh 2vw;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    flex-wrap: nowrap;
+    overflow: hidden;
 }
 
 header h1 {
-    font-size: 2rem;
+    font-size: 1.5vw; /* Increased font size for better visibility */
     font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.1vw;
+    margin: 0;
+    white-space: nowrap; /* Ensure the text stays on one line */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Handle overflow gracefully */
+    flex-shrink: 1; /* Allow the text to shrink within its container */
+}
+
+header nav {
+    display: flex;
+    flex: 2; /* Allocate space for navigation */
+    justify-content: flex-end;
+    align-items: center;
 }
 
 header nav ul {
     list-style: none;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1vw; /* Slightly increased gap for better spacing */
+    margin: 0;
+    padding: 0;
 }
 
 header nav a {
     color: #fff;
     text-decoration: none;
-    font-size: 1rem;
-    font-weight: bold;
-    transition: color 0.3s ease, transform 0.3s ease;
+    font-size: 1.1vw; /* Increased font size for links */
+    font-weight: 500;
+    padding: 0.5vh 1vw; /* Increased padding for better spacing */
+    white-space: nowrap; /* Prevent text wrapping */
+    transition: color 0.3s ease, transform 0.2s ease;
 }
 
 header nav a:hover {
     color: #ffcc00;
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 /* Active link styling */
 header nav a.active {
     color: #ffcc00;
-    border-bottom: 2px solid #ffcc00;
+    border-bottom: 0.1vh solid #ffcc00; /* Subtle underline for active links */
 }
 
 /* Main content styling */
@@ -75,10 +91,10 @@ main section {
 footer {
     background: linear-gradient(90deg, #333, #1f77b4);
     color: #fff;
-    padding: 1.5rem 2rem;
+    padding: 1rem 2rem;
     text-align: center;
-    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-    font-size: 0.9rem;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 0.8rem;
     bottom: 0;
     z-index: 1000;
 }
@@ -92,12 +108,12 @@ footer a {
     color: #ffcc00;
     text-decoration: none;
     font-weight: bold;
-    transition: color 0.3s ease, transform 0.3s ease;
+    transition: color 0.3s ease, transform 0.2s ease;
 }
 
 footer a:hover {
     color: #fff;
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 /* Responsive adjustments for smaller screens */
@@ -105,16 +121,27 @@ footer a:hover {
     header {
         flex-direction: column;
         text-align: center;
+        padding: 1vh; /* Compact padding for smaller screens */
+    }
+
+    header h1 {
+        font-size: 2.5vw; /* Adjusted font size for smaller screens */
+        margin-bottom: 0.8vh;
     }
 
     header nav ul {
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 1vh; /* Stack links vertically for readability */
+    }
+
+    header nav a {
+        font-size: 1.3vw; /* Adjusted size for smaller devices */
+        padding: 0.5vh 1vw; /* Maintain button size */
     }
 
     footer {
-        font-size: 0.8rem;
-        padding: 1rem 1.5rem;
+        font-size: 0.7rem;
+        padding: 0.8rem 1.5rem;
     }
 }
 
@@ -123,7 +150,7 @@ footer a:hover {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 2rem; /* Reduced spacing for a tighter layout */
+    gap: 2rem; /* Adjusted spacing for clean layout */
     margin-top: 1rem;
 }
 
