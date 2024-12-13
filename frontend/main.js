@@ -17,22 +17,22 @@ async function totalInteractionsData() {
     const data = await response.json();
     const yearQuarter = data.year_quarter;
     const totalInteractions = data.total_interactions;
-    return { yearQuarter, totalInteractions };
+    return { yearQuarter, totalInteractions }
 }
 
-async function renderTotalInteractionsChart() {
+async function renderTotalInteractionsChart () {
     const chartData = await totalInteractionsData();
     const getChartElement = document.getElementById('chart1');
-    new Chart(getChartElement, {
+    new Chart (getChartElement, {
         type: "line",
         data: {
             labels: chartData.yearQuarter,
             datasets: [{
                 label: 'none',
                 data: chartData.totalInteractions,
-                borderColor: "#4BAAC8",
-                backgroundColor: "rgba(75, 170, 200, 0.3)",
-                borderWidth: 2,
+                borderColor: "#1f77b4",
+                backgroundColor: "transparent",
+                borderWidth: 1,
             }]
         },
         options: {
@@ -43,66 +43,24 @@ async function renderTotalInteractionsChart() {
                 },
                 title: {
                     display: true,
-                    text: 'Total Interactions Over The Course Of War-time',
-                    color: 'black',
-                    font: {
-                        size: 30,
-                        weight: 'bold',
-                    },
-                },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Interactions',
-                        color: '#4BAAC8',
-                        font: {
-                            size: 30,
-                            weight: 'bold',
-                        },
-                    },
-                    ticks: {
-                        color: 'black',
-                        padding: 10,
-                    },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.4)',
-                    },
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Year and Quarter',
-                        color: '#4BAAC8',
-                        font: {
-                            size: 30,
-                            weight: 'bold',
-                        },
-                    },
-                    ticks: {
-                        color: 'black',
-                    },
-                    grid: {
-                        display: false,
-                    },
-                },
-            },
-        },
-    });
-    console.log('Total interactions chart finished rendering!');
+                    text: 'Total Interactions Over The Course Of War-time'
+                }
+            }
+        }
+    })
+    console.log('Total interactions chart finished rendering!')
 }
 renderTotalInteractionsChart();
 
 // Interactive chart nr. 2
 async function initSupportChart() {
     try {
-        const timeseriesData = await fetch("http://localhost:3000/api/timeseries")
+        const supportOverYearquartersData = await fetch("http://localhost:3000/api/support_over_yearquarters")
             .then((res) => res.json());
 
-        const labels = timeseriesData.map((d) => `${d.year} Q${d.quarter}`);
-        const supportData = timeseriesData.map((d) => d.avg_sentiment);
+        // Kombiner år og kvartal til labels som "2021 Q1"
+        const labels = supportOverYearquartersData.map((d) => `${d.year} Q${d.quarter}`);
+        const supportData = supportOverYearquartersData.map((d) => d.avg_sentiment);
 
         const ctx = document.getElementById("chart2").getContext("2d");
 
@@ -112,70 +70,77 @@ async function initSupportChart() {
                 labels: labels,
                 datasets: [
                     {
-                        label: "Average support for Ukraine",
+                        label: "Average support for Ukraine (by quarter)",
                         data: supportData,
-                        borderColor: "#4BAAC8",
-                        backgroundColor: "rgba(75, 170, 200, 0.3)",
-                        borderWidth: 2,
+                        borderColor: "#09A4F6",
+                        backgroundColor: "transparent",
                         pointRadius: 4,
+                        pointStyle: "circle", // Gør punkterne cirkulære
+                        borderWidth: 4,
                     },
                 ],
             },
             options: {
                 responsive: true,
-                plugins: {
-                    legend: {
-                        display: false,
-                    },
-                    title: {
-                        display: true,
-                        text: [
-                            "How does the support for Ukraine change over time?",
-                            "Support is calculated as +1 for 'for Ukraine' and -1 for 'against Ukraine"
-                        ],
-                        color: 'black',
-                        font: {
-                            size: 25,
-                            weight: 'bold',
-                        },
-                    },
+                interaction: {
+                    mode: "index",
+                    intersect: false,
                 },
                 scales: {
                     y: {
                         title: {
                             display: true,
-                            text: "Support level",
-                            color: '#4BAAC8',
+                            text: "Support Level",
+                            color: "#09A4F6",
                             font: {
                                 size: 30,
-                                weight: 'bold',
-                            },
+                                weight: 'bold'
+                            }
                         },
-                        min: -0.5,
-                        max: 0.5,
+                        min: -40,
+                        max: 100,
                         ticks: {
-                            color: 'black',
-                        },
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.4)',
-                        },
+                            color: "#09A4F6",
+                            font: {
+                                size: 20,
+                            }
+                        }
                     },
                     x: {
+                        type: "category",
                         title: {
                             display: true,
                             text: "Year and Quarter",
-                            color: '#4BAAC8',
+                            color: "#F65B09",
                             font: {
-                                size: 30,
+                                size: 20,
                                 weight: 'bold',
-                            },
+                            }
                         },
                         ticks: {
-                            color: 'black',
+                            autoSkip: false,
+                            color: '#F65B09',
+                            font: {
+                                size: 15,
+                            }
                         },
-                        grid: {
-                            display: false,
-                        },
+                    },
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: [
+                            "How does support for Ukraine change over time?",
+                            "Values above 0 indicate support, values below 0 indicate against."
+                        ],
+                        color: 'black',
+                        font: {
+                            size: 25,
+                            weight: 'bold',
+                        }
+                    },
+                    legend: {
+                        display: false,
                     },
                 },
             },
@@ -289,7 +254,12 @@ function createPopupContent(stats) {
 // Add country markers to the map
 function addCountryMarkers(map, countryData) {
     const markers = [
+        { name: "Denmark", coords: [56.2639, 9.5018] },
+        { name: "Germany", coords: [51.1657, 10.4515] },
+        { name: "France", coords: [46.6034, 1.8883] },
         { name: "Malta", coords: [35.9375, 14.3754] },
+        { name: "Wales", coords: [52.1307, -3.7837] },
+        { name: "Switzerland", coords: [46.8182, 8.2275] },
     ];
 
     markers.forEach(({ name, coords }) => {
