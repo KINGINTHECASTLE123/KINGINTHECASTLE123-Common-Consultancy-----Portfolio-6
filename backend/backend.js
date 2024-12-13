@@ -118,7 +118,7 @@ app.get("/api/mapdata", (req, res) => {
 app.get("/api/sentiment/percentages", (req, res) => {
     const query = `
         SELECT country,
-        \tROUND(SUM(gpt_ukraine_for_imod = 'for') * 100 / COUNT(*)) AS positive_percentage,
+        ROUND(SUM(gpt_ukraine_for_imod = 'for') * 100 / COUNT(*)) AS positive_percentage,
         ROUND(SUM(gpt_ukraine_for_imod = 'imod') * 100 / COUNT(*)) AS negative_percentage
         FROM sourcepop
         INNER JOIN metrics ON metrics.ccpageid = sourcepop.ccpageid
