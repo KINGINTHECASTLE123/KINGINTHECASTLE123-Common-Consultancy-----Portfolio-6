@@ -109,10 +109,12 @@ app.get("/api/mapdata", (req, res) => {
             console.error("Query Error:", err);
             res.status(500).send({ error: "Database query failed" });
         } else {
+            // Return the data as-is, no special mappings in backend
             res.json(results);
         }
     });
 });
+
 
 // Endpoint to reach sentiment percentages support of Ukraine
 app.get("/api/sentiment/percentages", (req, res) => {
