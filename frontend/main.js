@@ -281,6 +281,7 @@ function getColor(stats) {
     const total_forNumber = Number(stats.total_for)
     const total_imodNumber = Number(stats.total_imod)
     const forPercentage = total_forNumber / (total_forNumber + total_imodNumber);
+    console.log(forPercentage)
     if (forPercentage >= 0.75) return "#67000d";
     if (forPercentage >= 0.5) return "#a50f15";
     if (forPercentage >= 0.25) return "#ef3b2c";
