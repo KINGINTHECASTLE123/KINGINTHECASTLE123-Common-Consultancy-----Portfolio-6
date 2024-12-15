@@ -1,17 +1,17 @@
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("Dashboard loaded!");
     try {
-        const map = await initMap();
+        const map = await initMap(); // Initialize the interactive map
         console.log("Map initialized successfully.");
 
-        await initSupportChart();
+        await initSupportChart(); // Render support chart
         console.log("Support chart initialized successfully.");
     } catch (error) {
         console.error("Error initializing dashboard components:", error);
     }
 });
 
-// Sentiment bar chart nr. 1
+// Fetch and render sentiment bar chart data (Visualization 1)
 async function sentimentPercentageData() {
     const response = await fetch('http://localhost:3000/api/sentiment/percentages');
     const data = await response.json();
@@ -97,7 +97,7 @@ async function renderSentimentPercentageChart() {
 }
 renderSentimentPercentageChart();
 
-// Interactive chart nr. 2
+// Fetch and render support chart data (Visualization 2)
 async function initSupportChart() {
     try {
         const supportOverYearquartersData = await fetch("http://localhost:3000/api/support_over_yearquarters")
@@ -195,7 +195,7 @@ async function initSupportChart() {
     }
 }
 
-// Interactive chart nr. 3
+// Fetch and render total interactions chart data (Visualization 3)
 async function totalInteractionsData() {
     const response = await fetch('http://localhost:3000/api/total_interactions_over_year');
     const data = await response.json();
@@ -281,7 +281,7 @@ async function renderTotalInteractionsChart() {
 }
 renderTotalInteractionsChart();
 
-// Interactive Map nr. 4
+// Initialize map (Visualization 4)
 async function initMap() {
     const map = L.map("map").setView([50.0, 10.0], 4);
 
