@@ -360,7 +360,7 @@ async function renderSentimentPercentageChart() {
         data: {
             labels: chartData.country,
             datasets: [{
-                label: 'none',
+                label: '%',
                 data: chartData.positive_percentage,
                 backgroundColor: '#4BAAC8',
                 borderWidth: 1,
