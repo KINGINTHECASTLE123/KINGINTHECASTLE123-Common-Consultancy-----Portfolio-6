@@ -289,7 +289,7 @@ function getColor(stats) {
     const forPercentage = total_forNumber / totalVotes;
     if (forPercentage >= 0.80) return "#67000d";
     if (forPercentage >= 0.70) return "#a50f15";
-    if (forPercentage >= 0.65) return "#ef3b2c";
+    if (forPercentage >= 0.60) return "#ef3b2c";
     if (forPercentage >= 0.50) return "#fcbba1";
     return "#fcbba1";
 }
