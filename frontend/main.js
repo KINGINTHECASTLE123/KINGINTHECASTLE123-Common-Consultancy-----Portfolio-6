@@ -278,13 +278,19 @@ function bindPopup(layer, countryName, countryData) {
 // Determine map color based on sentiment
 function getColor(stats) {
     // Convert string to numbers
-    const total_forNumber = Number(stats.total_for)
-    const total_imodNumber = Number(stats.total_imod)
-    const forPercentage = total_forNumber / (total_forNumber + total_imodNumber);
-    console.log(forPercentage)
-    if (forPercentage >= 0.75) return "#67000d";
-    if (forPercentage >= 0.5) return "#a50f15";
-    if (forPercentage >= 0.25) return "#ef3b2c";
+    const total_forNumber = Number(stats.total_for);
+    const total_imodNumber = Number(stats.total_imod);
+    const totalVotes = total_forNumber + total_imodNumber;
+
+    // Calculate percentage
+    stats.forPercentage = totalVotes > 0 ? (total_forNumber / totalVotes) * 100 : 0;
+
+    // Determine color based on percentage
+    const forPercentage = total_forNumber / totalVotes;
+    if (forPercentage >= 0.80) return "#67000d";
+    if (forPercentage >= 0.70) return "#a50f15";
+    if (forPercentage >= 0.60) return "#ef3b2c";
+    if (forPercentage >= 0.50) return "#fcbba1";
     return "#fcbba1";
 }
 
@@ -294,7 +300,7 @@ function createPopupContent(stats) {
         <b>${stats.country}</b><br>
         For: ${stats.total_for}<br>
         Against: ${stats.total_imod}<br>
-        Total Posts: ${stats.total_posts}
+        Sentiment: ${stats.forPercentage.toFixed(1)}% 
     `;
 }
 
