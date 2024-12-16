@@ -59,18 +59,17 @@ app.get("/api/sentiment/percentages", (req, res) => {
 app.get("/api/support_over_yearquarters", (req, res) => {
     const query = `
         SELECT t.year, t.yearquarter,
-           AVG(
-               CASE
-                   WHEN c.gpt_ukraine_for_imod = 'for' THEN 100
-                   WHEN c.gpt_ukraine_for_imod = 'imod' THEN -100
-               END
-           ) AS avg_sentiment
+               ROUND(
+                       (COUNT(CASE WHEN c.gpt_ukraine_for_imod = 'for' THEN 1 END) * 100.0)
+                           / COUNT(*), 2
+               ) AS avg_sentiment
         FROM classification c
-        JOIN time t ON c.ccpost_id = t.ccpost_id
-        JOIN metrics m ON c.ccpost_id = m.ccpost_id
-        JOIN sourcepop s ON m.ccpageid = s.ccpageid        
+                 JOIN time t ON c.ccpost_id = t.ccpost_id
+                 JOIN metrics m ON c.ccpost_id = m.ccpost_id
+                 JOIN sourcepop s ON m.ccpageid = s.ccpageid
         WHERE s.country = 'Denmark'
           AND t.year IN (2022, 2023, 2024)
+          AND c.gpt_ukraine_for_imod IN ('for', 'imod')
         GROUP BY t.year, t.yearquarter
         ORDER BY t.year, t.yearquarter;
     `;
@@ -79,7 +78,7 @@ app.get("/api/support_over_yearquarters", (req, res) => {
             console.error("Query Error:", err);
             return res.status(500).send({ error: "Database query failed" });
         }
-        // Format yearquarter into year and quarter for the response
+        // Format yearquarter til year og quarter for responsen
         const formattedResults = results.map(row => {
             const [year, quarter] = row.yearquarter.split('Q');
             return {

@@ -43,7 +43,7 @@ async function renderSentimentPercentageChart() {
                 },
                 title: {
                     display: true,
-                    text: 'Percentage of Posts In Favor of Supporting Ukraine (excludes neutral positions)',
+                    text: 'Percentage of Interactions In Favor of Supporting Ukraine',
                     color: 'black',
                     font: {
                         size: 30,
@@ -144,14 +144,14 @@ async function initSupportChart() {
                     y: {
                         title: {
                             display: true,
-                            text: "Support Level",
+                            text: "Support Level (%)",
                             color: "#09A4F6",
                             font: {
                                 size: 30,
                                 weight: 'bold'
                             }
                         },
-                        min: -100,
+                        min: 0,
                         max: 100,
                         ticks: {
                             color: "#09A4F6",
@@ -159,7 +159,10 @@ async function initSupportChart() {
                             font: {
                                 size: 20,
                                 weight: 'bold',
-                            }
+                            },
+                            callback: function (value) {
+                                return value + '%';
+                            },
                         }
                     },
                     x: {
@@ -188,8 +191,8 @@ async function initSupportChart() {
                     title: {
                         display: true,
                         text: [
-                            "How does support for Ukraine change over time in Denmark?",
-                            "Values above 0 indicate support, values below 0 indicate against."
+                            "How does support for Ukraine change over time?",
+                            "Values represent support percentage."
                         ],
                         color: 'black',
                         font: {
@@ -207,6 +210,8 @@ async function initSupportChart() {
         console.error("Failed to fetch or render data:", error);
     }
 }
+
+initSupportChart();
 
 // Fetch and render total interactions chart data (Visualization 3)
 async function totalInteractionsData() {
@@ -264,9 +269,9 @@ async function renderTotalInteractionsChart() {
                     },
                     ticks: {
                         color: '#09A4F6',
-                        padding: 10,
+                        padding: 15,
                         font: {
-                            size: 15,
+                            size: 20,
                             weight: 'bold',
                         }
                     },
@@ -286,7 +291,7 @@ async function renderTotalInteractionsChart() {
                     },
                     ticks: {
                         color: '#F65B09',
-                        padding: 10,
+                        padding: 15,
                         font: {
                             size: 20,
                             weight: 'bold',
