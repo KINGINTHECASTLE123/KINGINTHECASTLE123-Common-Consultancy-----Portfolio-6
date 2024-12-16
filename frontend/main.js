@@ -142,7 +142,7 @@ async function initSupportChart() {
                                 weight: 'bold'
                             }
                         },
-                        min: -40,
+                        min: -100,
                         max: 100,
                         ticks: {
                             color: "#09A4F6",
