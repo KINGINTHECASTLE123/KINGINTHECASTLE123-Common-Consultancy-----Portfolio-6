@@ -57,8 +57,8 @@ app.get("/api/support_over_yearquarters", (req, res) => {
         SELECT t.year, t.yearquarter,
            AVG(
                CASE
-                   WHEN c.gpt_ukraine_for_imod = 'for' THEN 100
-                   WHEN c.gpt_ukraine_for_imod = 'imod' THEN -100
+                   WHEN c.gpt_ukraine_for_imod = 'for' THEN 1
+                   WHEN c.gpt_ukraine_for_imod = 'imod' THEN -1
                    ELSE 0
                END
            ) AS avg_sentiment
