@@ -67,7 +67,6 @@ app.get("/api/support_over_yearquarters", (req, res) => {
                  JOIN time t ON c.ccpost_id = t.ccpost_id
                  JOIN metrics m ON c.ccpost_id = m.ccpost_id
                  JOIN sourcepop s ON m.ccpageid = s.ccpageid
-        WHERE s.country = 'Denmark'
           AND t.year IN (2022, 2023, 2024)
           AND c.gpt_ukraine_for_imod IN ('for', 'imod')
         GROUP BY t.year, t.yearquarter

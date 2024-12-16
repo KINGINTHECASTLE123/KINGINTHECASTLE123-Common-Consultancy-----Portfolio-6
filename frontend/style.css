@@ -182,3 +182,7 @@ footer a:hover {
     color: black;
     margin-bottom: 10px;
 }
+
+#p2, #p1 {
+    margin-top: 1rem;
+}

@@ -43,7 +43,7 @@ async function renderSentimentPercentageChart() {
                 },
                 title: {
                     display: true,
-                    text: 'Percentage of Interactions In Favor of Supporting Ukraine',
+                    text: 'Percentage of Posts In Favor of Supporting Ukraine (2022-2024)',
                     color: 'black',
                     font: {
                         size: 30,
@@ -124,7 +124,7 @@ async function initSupportChart() {
                 labels: labels,
                 datasets: [
                     {
-                        label: "Average support for Ukraine (by quarter)",
+                        label: "Average support for Ukraine by quarter in European Countries (2022-2024)",
                         data: supportData,
                         borderColor: "#09A4F6",
                         backgroundColor: "transparent",
@@ -191,7 +191,7 @@ async function initSupportChart() {
                     title: {
                         display: true,
                         text: [
-                            "How does support for Ukraine change over time?",
+                            "How does Support for Ukraine in European Countries Change over Time?",
                             "Values represent support percentage."
                         ],
                         color: 'black',
