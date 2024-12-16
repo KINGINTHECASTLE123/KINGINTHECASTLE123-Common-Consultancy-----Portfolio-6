@@ -107,7 +107,7 @@ async function renderSentimentPercentageChart() {
 renderSentimentPercentageChart();
 
 // Fetch and render support chart data (Visualization 2)
-async function initSupportChart() {
+async function supportOverTimeChart() {
     try {
         const supportOverYearquartersData = await fetch("http://localhost:3000/api/support_over_yearquarters")
             .then((res) => res.json());
@@ -149,7 +149,7 @@ async function initSupportChart() {
                             font: {
                                 size: 30,
                                 weight: 'bold'
-                            }
+                            },
                         },
                         min: 0,
                         max: 100,
@@ -163,6 +163,10 @@ async function initSupportChart() {
                             callback: function (value) {
                                 return value + '%';
                             },
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.2)',
+                            zIndex: -1,
                         }
                     },
                     x: {
@@ -174,7 +178,7 @@ async function initSupportChart() {
                             font: {
                                 size: 30,
                                 weight: 'bold',
-                            }
+                            },
                         },
                         ticks: {
                             autoSkip: false,
@@ -183,8 +187,11 @@ async function initSupportChart() {
                             font: {
                                 size: 20,
                                 weight: 'bold',
-                            }
+                            },
                         },
+                        grid: {
+                            display: false,
+                        }
                     },
                 },
                 plugins: {
@@ -211,7 +218,7 @@ async function initSupportChart() {
     }
 }
 
-initSupportChart();
+supportOverTimeChart();
 
 // Fetch and render total interactions chart data (Visualization 3)
 async function totalInteractionsData() {
