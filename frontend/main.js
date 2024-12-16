@@ -43,7 +43,7 @@ async function renderSentimentPercentageChart() {
                 },
                 title: {
                     display: true,
-                    text: 'Percentage of Interactions In Favor of Supporting Ukraine',
+                    text: 'Percentage of Posts In Favor of Supporting Ukraine (excludes neutral positions)',
                     color: 'black',
                     font: {
                         size: 30,
@@ -188,7 +188,7 @@ async function initSupportChart() {
                     title: {
                         display: true,
                         text: [
-                            "How does support for Ukraine change over time?",
+                            "How does support for Ukraine change over time in Denmark?",
                             "Values above 0 indicate support, values below 0 indicate against."
                         ],
                         color: 'black',
