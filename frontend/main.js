@@ -58,15 +58,19 @@ async function renderSentimentPercentageChart() {
                     title: {
                         display: true,
                         text: 'Percentage',
-                        color: '#4BAAC8',
+                        color: '#09A4F6',
                         font: {
                             size: 30,
                             weight: 'bold',
                         },
                     },
                     ticks: {
-                        color: 'black',
-                        padding: 10,
+                        color: '#09A4F6',
+                        padding: 15,
+                        font: {
+                            size: 20,
+                            weight: 'bold',
+                        }
                     },
                     grid: {
                         color: 'rgba(0, 0, 0, 0.4)',
@@ -85,6 +89,11 @@ async function renderSentimentPercentageChart() {
                     },
                     ticks: {
                         color: '#F65B09',
+                        padding: 15,
+                        font: {
+                            size: 20,
+                            weight: 'bold',
+                        }
                     },
                     grid: {
                         display: false,
@@ -146,8 +155,10 @@ async function initSupportChart() {
                         max: 100,
                         ticks: {
                             color: "#09A4F6",
+                            padding: 15,
                             font: {
                                 size: 20,
+                                weight: 'bold',
                             }
                         }
                     },
@@ -158,15 +169,17 @@ async function initSupportChart() {
                             text: "Year and Quarter",
                             color: "#F65B09",
                             font: {
-                                size: 20,
+                                size: 30,
                                 weight: 'bold',
                             }
                         },
                         ticks: {
                             autoSkip: false,
                             color: '#F65B09',
+                            padding: 15,
                             font: {
-                                size: 15,
+                                size: 20,
+                                weight: 'bold',
                             }
                         },
                     },
@@ -180,7 +193,7 @@ async function initSupportChart() {
                         ],
                         color: 'black',
                         font: {
-                            size: 25,
+                            size: 30,
                             weight: 'bold',
                         }
                     },
@@ -252,6 +265,10 @@ async function renderTotalInteractionsChart() {
                     ticks: {
                         color: '#09A4F6',
                         padding: 10,
+                        font: {
+                            size: 15,
+                            weight: 'bold',
+                        }
                     },
                     grid: {
                         color: 'rgba(0, 0, 0, 0.4)',
@@ -269,6 +286,11 @@ async function renderTotalInteractionsChart() {
                     },
                     ticks: {
                         color: '#F65B09',
+                        padding: 10,
+                        font: {
+                            size: 20,
+                            weight: 'bold',
+                        }
                     },
                     grid: {
                         display: false,
