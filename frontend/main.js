@@ -1,38 +1,38 @@
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("Dashboard loaded!");
     try {
-        const map = await initMap();
+        const map = await initMap(); // Initialize the interactive map
         console.log("Map initialized successfully.");
 
-        await initSupportChart();
+        await initSupportChart(); // Render support chart
         console.log("Support chart initialized successfully.");
     } catch (error) {
         console.error("Error initializing dashboard components:", error);
     }
 });
 
-// Interactive chart nr. 1
-async function totalInteractionsData() {
-    const response = await fetch('http://localhost:3000/api/total_interactions_over_year');
+// Fetch and render sentiment bar chart data (Visualization 1)
+async function sentimentPercentageData() {
+    const response = await fetch('http://localhost:3000/api/sentiment/percentages');
     const data = await response.json();
-    const yearQuarter = data.year_quarter;
-    const totalInteractions = data.total_interactions;
-    return { yearQuarter, totalInteractions };
+    const country = data.country;
+    const positive_percentage = data.positive_percentage;
+    const negative_percentage = data.negative_percentage;
+    return { country, positive_percentage, negative_percentage }
 }
 
-async function renderTotalInteractionsChart() {
-    const chartData = await totalInteractionsData();
-    const getChartElement = document.getElementById('chart1');
+async function renderSentimentPercentageChart() {
+    const chartData = await sentimentPercentageData();
+    const getChartElement = document.getElementById('sentiment_chart');
     new Chart(getChartElement, {
-        type: "line",
+        type: "bar",
         data: {
-            labels: chartData.yearQuarter,
+            labels: chartData.country,
             datasets: [{
-                label: 'none',
-                data: chartData.totalInteractions,
-                borderColor: "#4BAAC8",
-                backgroundColor: "rgba(75, 170, 200, 0.3)",
-                borderWidth: 2,
+                label: '%',
+                data: chartData.positive_percentage,
+                backgroundColor: '#4BAAC8',
+                borderWidth: 1,
             }]
         },
         options: {
@@ -43,20 +43,21 @@ async function renderTotalInteractionsChart() {
                 },
                 title: {
                     display: true,
-                    text: 'Total Interactions Over The Course Of War-time',
+                    text: 'Percentage of Interactions In Favor of Supporting Ukraine',
                     color: 'black',
                     font: {
                         size: 30,
                         weight: 'bold',
-                    },
+                    }
                 },
             },
             scales: {
                 y: {
                     beginAtZero: true,
+                    max: 100,
                     title: {
                         display: true,
-                        text: 'Interactions',
+                        text: 'Percentage',
                         color: '#4BAAC8',
                         font: {
                             size: 30,
@@ -69,33 +70,34 @@ async function renderTotalInteractionsChart() {
                     },
                     grid: {
                         color: 'rgba(0, 0, 0, 0.4)',
-                    },
+                        zIndex: -1,
+                    }
                 },
                 x: {
                     title: {
                         display: true,
-                        text: 'Year and Quarter',
-                        color: '#4BAAC8',
+                        text: 'Country',
+                        color: '#F65B09',
                         font: {
                             size: 30,
                             weight: 'bold',
                         },
                     },
                     ticks: {
-                        color: 'black',
+                        color: '#F65B09',
                     },
                     grid: {
                         display: false,
-                    },
-                },
-            },
-        },
+                    }
+                }
+            }
+        }
     });
-    console.log('Total interactions chart finished rendering!');
+    console.log('Sentiment chart rendered!');
 }
-renderTotalInteractionsChart();
+renderSentimentPercentageChart();
 
-// Interactive chart nr. 2
+// Fetch and render support chart data (Visualization 2)
 async function initSupportChart() {
     try {
         const supportOverYearquartersData = await fetch("http://localhost:3000/api/support_over_yearquarters")
@@ -118,7 +120,7 @@ async function initSupportChart() {
                         borderColor: "#09A4F6",
                         backgroundColor: "transparent",
                         pointRadius: 4,
-                        pointStyle: "circle", // Gør punkterne cirkulære
+                        pointStyle: "circle",
                         borderWidth: 4,
                     },
                 ],
@@ -193,7 +195,93 @@ async function initSupportChart() {
     }
 }
 
-// Interactive Map nr. 3
+// Fetch and render total interactions chart data (Visualization 3)
+async function totalInteractionsData() {
+    const response = await fetch('http://localhost:3000/api/total_interactions_over_year');
+    const data = await response.json();
+    const yearQuarter = data.year_quarter;
+    const totalInteractions = data.total_interactions;
+    return { yearQuarter, totalInteractions };
+}
+
+async function renderTotalInteractionsChart() {
+    const chartData = await totalInteractionsData();
+    const getChartElement = document.getElementById('chart1');
+    new Chart(getChartElement, {
+        type: "line",
+        data: {
+            labels: chartData.yearQuarter,
+            datasets: [{
+                label: 'Interactions',
+                data: chartData.totalInteractions,
+                borderColor: "#09A4F6",
+                backgroundColor: "transparent",
+                borderWidth: 4,
+                pointRadius: 4,
+                pointStyle: "circle",
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                title: {
+                    display: true,
+                    text: 'Total Interactions Over The Course Of War-time',
+                    color: 'black',
+                    font: {
+                        size: 30,
+                        weight: 'bold',
+                    },
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Interactions',
+                        color: '#09A4F6',
+                        font: {
+                            size: 30,
+                            weight: 'bold',
+                        },
+                    },
+                    ticks: {
+                        color: '#09A4F6',
+                        padding: 10,
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.4)',
+                    },
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Year and Quarter',
+                        color: '#F65B09',
+                        font: {
+                            size: 30,
+                            weight: 'bold',
+                        },
+                    },
+                    ticks: {
+                        color: '#F65B09',
+                    },
+                    grid: {
+                        display: false,
+                    },
+                },
+            },
+        },
+    });
+    console.log('Total interactions chart finished rendering!');
+}
+renderTotalInteractionsChart();
+
+// Initialize map (Visualization 4)
 async function initMap() {
     const map = L.map("map").setView([50.0, 10.0], 4);
 
@@ -347,89 +435,3 @@ function addLegend(map) {
     };
     legend.addTo(map);
 }
-
-// Sentiment bar chart nr. 4
-async function sentimentPercentageData() {
-    const response = await fetch('http://localhost:3000/api/sentiment/percentages');
-    const data = await response.json();
-    const country = data.country;
-    const positive_percentage = data.positive_percentage;
-    const negative_percentage = data.negative_percentage;
-    return { country, positive_percentage, negative_percentage }
-}
-
-async function renderSentimentPercentageChart() {
-    const chartData = await sentimentPercentageData();
-    const getChartElement = document.getElementById('sentiment_chart');
-    new Chart(getChartElement, {
-        type: "bar",
-        data: {
-            labels: chartData.country,
-            datasets: [{
-                label: '%',
-                data: chartData.positive_percentage,
-                backgroundColor: '#4BAAC8',
-                borderWidth: 1,
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false,
-                },
-                title: {
-                    display: true,
-                    text: 'Percentage of Interactions In Favor of Supporting Ukraine',
-                    color: 'black',
-                    font: {
-                        size: 30,
-                        weight: 'bold',
-                    }
-                },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    title: {
-                        display: true,
-                        text: 'Percentage',
-                        color: '#4BAAC8',
-                        font: {
-                            size: 30,
-                            weight: 'bold',
-                        },
-                    },
-                    ticks: {
-                        color: 'black',
-                        padding: 10,
-                    },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.4)',
-                        zIndex: -1, // Render gridlines behind bars
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Country',
-                        color: '#4BAAC8',
-                        font: {
-                            size: 30,
-                            weight: 'bold',
-                        },
-                    },
-                    ticks: {
-                        color: 'black',
-                    },
-                    grid: {
-                        display: false, // No vertical gridlines
-                    }
-                }
-            }
-        }
-    });
-    console.log('Sentiment chart rendered!');
-}
-renderSentimentPercentageChart();

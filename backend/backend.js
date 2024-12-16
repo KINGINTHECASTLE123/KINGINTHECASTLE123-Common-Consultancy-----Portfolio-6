@@ -8,7 +8,7 @@ const port = 3000;
 
 app.use(cors());
 
-// MySQL database connection
+// Establish MySQL database connection
 const connection = mysql.createConnection({
     host: process.env.DBHOST,
     user: process.env.DBUSER,
@@ -16,7 +16,7 @@ const connection = mysql.createConnection({
     database: process.env.DBNAME
 });
 
-// Test database connection
+// Test the database connection
 connection.connect(err => {
     if (err) {
         console.error("Error connecting to the database:", err);
@@ -25,98 +25,8 @@ connection.connect(err => {
     }
 });
 
-// Interactive Chart nr. 1
-app.get('/api/total_interactions_over_year', (req, res) => {
-    const query = `
-    SELECT yearquarter AS year_quarter, SUM(total_interactions) AS total_interactions
-    FROM \`time\`
-    INNER JOIN metrics ON metrics.ccpost_id = \`time\`.ccpost_id
-    WHERE yearquarter >= "2022Q1"
-    GROUP BY yearquarter
-    ORDER BY yearquarter ASC;`;
-    connection.query(query, (error, results) => {
-        if (error) {
-            console.error("Query error:", error);
-            return res.status(500).send(`${error}: Query failed`);
-        }
-        // Iterate through results and push results into each separate array
-        const response = { year_quarter: [], total_interactions: [] }
-        results.forEach(row => {
-            // Tilføj mellemrum mellem år og kvartal
-            const formattedYearQuarter = row.year_quarter.slice(0, 4) + ' ' + row.year_quarter.slice(4);
-            response.year_quarter.push(formattedYearQuarter);
-            response.total_interactions.push(row.total_interactions);
-        });
-        res.json(response);
-    });
-});
-
-// Interactive Chart nr. 2
-app.get("/api/support_over_yearquarters", (req, res) => {
-    const query = `
-        SELECT t.year, t.yearquarter,
-           AVG(
-               CASE
-                   WHEN c.gpt_ukraine_for_imod = 'for' THEN 1
-                   WHEN c.gpt_ukraine_for_imod = 'imod' THEN -1
-                   ELSE 0
-               END
-           ) AS avg_sentiment
-        FROM classification c
-        JOIN time t ON c.ccpost_id = t.ccpost_id
-        JOIN metrics m ON c.ccpost_id = m.ccpost_id
-        JOIN sourcepop s ON m.ccpageid = s.ccpageid
-        WHERE s.country = 'Denmark'
-          AND t.year IN (2022, 2023, 2024)
-        GROUP BY t.year, t.yearquarter
-        ORDER BY t.year, t.yearquarter;`;
-
-    connection.query(query, (err, results) => {
-        if (err) {
-            console.error("Query Error:", err);
-            return res.status(500).send({ error: "Database query failed" });
-        }
-
-        // Split yearquarter into year and quarter
-        const formattedResults = results.map(row => {
-            const [year, quarter] = row.yearquarter.split('Q'); // Split "2022Q1" into ["2022", "1"]
-            return {
-                year: parseInt(year),
-                quarter: parseInt(quarter),
-                avg_sentiment: parseFloat(row.avg_sentiment)
-            };
-        });
-
-        res.json(formattedResults);
-    });
-});
-
-// Interactive Map (Visualizations nr.3)
-app.get("/api/mapdata", (req, res) => {
-    const query = `
-        SELECT 
-            s.country AS country,
-            SUM(CASE WHEN c.gpt_ukraine_for_imod = 'for' THEN 1 ELSE 0 END) AS total_for,
-            SUM(CASE WHEN c.gpt_ukraine_for_imod = 'imod' THEN 1 ELSE 0 END) AS total_imod,
-            COUNT(*) AS total_posts
-        FROM metrics m
-        JOIN sourcepop s ON m.ccpageid = s.ccpageid
-        JOIN classification c ON m.ccpost_id = c.ccpost_id
-        GROUP BY s.country;
-    `;
-    connection.query(query, (err, results) => {
-        if (err) {
-            console.error("Query Error:", err);
-            res.status(500).send({ error: "Database query failed" });
-        } else {
-            // Return the data as-is, no special mappings in backend
-            res.json(results);
-        }
-    });
-});
-
-
-// Endpoint to reach sentiment percentages support of Ukraine
+// API for Bar Chart Data (Visualization 1)
+// Calculates positive and negative sentiment percentages grouped by country
 app.get("/api/sentiment/percentages", (req, res) => {
     const query = `
         SELECT country,
@@ -134,8 +44,8 @@ app.get("/api/sentiment/percentages", (req, res) => {
             console.error("Query Error:", err);
             res.status(500).send({ error: "Database query failed" });
         }
-        // Iterate through results and push results into each separate array
-        const response = { country: [], positive_percentage: [] }
+        // Format results into separate arrays for response
+        const response = { country: [], positive_percentage: [] };
         results.forEach(row => {
             response.country.push(row.country);
             response.positive_percentage.push(row.positive_percentage);
@@ -144,8 +54,97 @@ app.get("/api/sentiment/percentages", (req, res) => {
     });
 });
 
-// Start server
+// API for Line Chart Data (Visualization 2)
+// Returns quarterly average sentiment for Ukraine in Denmark
+app.get("/api/support_over_yearquarters", (req, res) => {
+    const query = `
+        SELECT t.year, t.yearquarter,
+           AVG(
+               CASE
+                   WHEN c.gpt_ukraine_for_imod = 'for' THEN 100
+                   WHEN c.gpt_ukraine_for_imod = 'imod' THEN -100
+                   ELSE 0
+               END
+           ) AS avg_sentiment
+        FROM classification c
+        JOIN time t ON c.ccpost_id = t.ccpost_id
+        JOIN metrics m ON c.ccpost_id = m.ccpost_id
+        JOIN sourcepop s ON m.ccpageid = s.ccpageid
+        WHERE s.country = 'Denmark'
+          AND t.year IN (2022, 2023, 2024)
+        GROUP BY t.year, t.yearquarter
+        ORDER BY t.year, t.yearquarter;
+    `;
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error("Query Error:", err);
+            return res.status(500).send({ error: "Database query failed" });
+        }
+        // Format yearquarter into year and quarter for the response
+        const formattedResults = results.map(row => {
+            const [year, quarter] = row.yearquarter.split('Q');
+            return {
+                year: parseInt(year),
+                quarter: parseInt(quarter),
+                avg_sentiment: parseFloat(row.avg_sentiment)
+            };
+        });
+        res.json(formattedResults);
+    });
+});
+
+// API for Line Chart Data (Visualization 3)
+// Returns total interactions per quarter starting from 2022Q1
+app.get('/api/total_interactions_over_year', (req, res) => {
+    const query = `
+    SELECT yearquarter AS year_quarter, SUM(total_interactions) AS total_interactions
+    FROM \`time\`
+    INNER JOIN metrics ON metrics.ccpost_id = \`time\`.ccpost_id
+    WHERE yearquarter >= "2022Q1"
+    GROUP BY yearquarter
+    ORDER BY yearquarter ASC;
+    `;
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error("Query Error:", error);
+            return res.status(500).send({ error: "Database query failed" });
+        }
+        // Format results for response
+        const response = { year_quarter: [], total_interactions: [] };
+        results.forEach(row => {
+            const formattedYearQuarter = row.year_quarter.slice(0, 4) + ' ' + row.year_quarter.slice(4);
+            response.year_quarter.push(formattedYearQuarter);
+            response.total_interactions.push(row.total_interactions);
+        });
+        res.json(response);
+    });
+});
+
+// API for Map Data (Visualization 4)
+// Returns total "for" and "imod" sentiment counts grouped by country
+app.get("/api/mapdata", (req, res) => {
+    const query = `
+        SELECT 
+            s.country AS country,
+            SUM(CASE WHEN c.gpt_ukraine_for_imod = 'for' THEN 1 ELSE 0 END) AS total_for,
+            SUM(CASE WHEN c.gpt_ukraine_for_imod = 'imod' THEN 1 ELSE 0 END) AS total_imod,
+            COUNT(*) AS total_posts
+        FROM metrics m
+        JOIN sourcepop s ON m.ccpageid = s.ccpageid
+        JOIN classification c ON m.ccpost_id = c.ccpost_id
+        GROUP BY s.country;
+    `;
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error("Query Error:", err);
+            res.status(500).send({ error: "Database query failed" });
+        } else {
+            res.json(results);
+        }
+    });
+});
+
+// Start the server
 app.listen(port, () => {
     console.log(`Application is now running on port ${port}`);
 });
-//
