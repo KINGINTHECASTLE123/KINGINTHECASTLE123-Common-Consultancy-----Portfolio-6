@@ -73,22 +73,21 @@ async function renderSentimentPercentageChart() {
                         }
                     },
                     grid: {
-                        color: 'rgba(0, 0, 0, 0.4)',
-                        zIndex: -1,
+                        display: false,
                     }
                 },
                 x: {
                     title: {
                         display: true,
                         text: 'Country',
-                        color: '#F65B09',
+                        color: '#808080',
                         font: {
                             size: 30,
                             weight: 'bold',
                         },
                     },
                     ticks: {
-                        color: '#F65B09',
+                        color: '#808080',
                         padding: 15,
                         font: {
                             size: 20,
@@ -165,8 +164,7 @@ async function supportOverTimeChart() {
                             },
                         },
                         grid: {
-                            color: 'rgba(0, 0, 0, 0.2)',
-                            zIndex: -1,
+                            display: false,
                         }
                     },
                     x: {
@@ -174,7 +172,7 @@ async function supportOverTimeChart() {
                         title: {
                             display: true,
                             text: "Year and Quarter",
-                            color: "#F65B09",
+                            color: "#808080",
                             font: {
                                 size: 30,
                                 weight: 'bold',
@@ -182,7 +180,7 @@ async function supportOverTimeChart() {
                         },
                         ticks: {
                             autoSkip: false,
-                            color: '#F65B09',
+                            color: '#808080',
                             padding: 15,
                             font: {
                                 size: 20,
@@ -283,21 +281,21 @@ async function renderTotalInteractionsChart() {
                         }
                     },
                     grid: {
-                        color: 'rgba(0, 0, 0, 0.4)',
+                        display: false,
                     },
                 },
                 x: {
                     title: {
                         display: true,
                         text: 'Year and Quarter',
-                        color: '#F65B09',
+                        color: '#808080',
                         font: {
                             size: 30,
                             weight: 'bold',
                         },
                     },
                     ticks: {
-                        color: '#F65B09',
+                        color: '#808080',
                         padding: 15,
                         font: {
                             size: 20,
